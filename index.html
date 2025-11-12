@@ -42,6 +42,8 @@ body.light tr:hover td{background:rgba(139,92,246,0.05)}
 td:first-child{text-align:left;font-weight:600}
 body.dark td:first-child{color:#8b5cf6}
 body.light td:first-child{color:#7c3aed}
+.nutrient-value{font-weight:600;font-size:0.95em}
+.nutrient-unit{font-size:0.7em;color:#64748b;margin-left:2px;text-transform:none}
 input,select{padding:10px 12px;border-radius:10px;font-size:0.95em;width:100%;transition:all 0.3s;font-weight:500}
 body.dark input,body.dark select{background:rgba(15,23,42,0.8);color:#e4e7eb;border:1px solid rgba(139,92,246,0.2)}
 body.light input,body.light select{background:rgba(255,255,255,0.9);color:#1e293b;border:1px solid rgba(139,92,246,0.3)}
@@ -157,11 +159,11 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 </div>
 
 <div class='section'>
-<h3>📊 Makronährstoffe (mg/L)</h3>
+<h3>📊 Makronährstoffe</h3>
 <div class='table-container'>
 <table>
 <thead>
-<tr><th>Dünger</th><th>Dosierung</th><th>N</th><th>P</th><th>K</th><th>Ca</th><th>Mg</th><th>S</th></tr>
+<tr><th>Dünger</th><th>Dosierung</th><th>N<br><small>mg/L</small></th><th>P<br><small>mg/L</small></th><th>K<br><small>mg/L</small></th><th>Ca<br><small>mg/L</small></th><th>Mg<br><small>mg/L</small></th><th>S<br><small>mg/L</small></th></tr>
 </thead>
 <tbody id='macro-body'></tbody>
 </table>
@@ -169,11 +171,11 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 </div>
 
 <div class='section'>
-<h3>🔬 Mikronährstoffe (mg/L)</h3>
+<h3>🔬 Mikronährstoffe</h3>
 <div class='table-container'>
 <table>
 <thead>
-<tr><th>Dünger</th><th>Dosierung</th><th>B</th><th>Cu</th><th>Fe</th><th>Mn</th><th>Mo</th><th>Zn</th><th>Si</th></tr>
+<tr><th>Dünger</th><th>Dosierung</th><th>B<br><small>mg/L</small></th><th>Cu<br><small>mg/L</small></th><th>Fe<br><small>mg/L</small></th><th>Mn<br><small>mg/L</small></th><th>Mo<br><small>mg/L</small></th><th>Zn<br><small>mg/L</small></th><th>Si<br><small>mg/L</small></th></tr>
 </thead>
 <tbody id='micro-body'></tbody>
 </table>
@@ -281,7 +283,7 @@ function addFertRowWithSelection(fertIndex) {
     });
 
     row.innerHTML = `
-        <select onchange="calc()">${options}</select>
+        <select onchange="updateUnit(this)">${options}</select>
         <input type="number" step="0.01" value="0" oninput="calc()">
         <span class="unit">${FERTS[fertIndex].unit}</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
@@ -412,39 +414,63 @@ function calc() {
     let macroHTML = '';
     if(tap>0){
         macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
-            <td>${w.n.toFixed(1)}</td><td>${w.p.toFixed(1)}</td><td>${w.k.toFixed(1)}</td>
-            <td>${w.ca.toFixed(1)}</td><td>${w.mg.toFixed(1)}</td><td>${w.s.toFixed(1)}</td></tr>`;
+            <td><span class="nutrient-value">${w.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.k.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.ca.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.mg.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.s.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     }
     used.forEach(u=>{
         macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
-            <td>${u.n.toFixed(1)}</td><td>${u.p.toFixed(1)}</td><td>${u.k.toFixed(1)}</td>
-            <td>${u.ca.toFixed(1)}</td><td>${u.mg.toFixed(1)}</td><td>${u.s.toFixed(1)}</td></tr>`;
+            <td><span class="nutrient-value">${u.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${u.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${u.k.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${u.ca.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${u.mg.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${u.s.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     });
     macroHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
-        <td>${(w.n+sum.n).toFixed(1)}</td><td>${(w.p+sum.p).toFixed(1)}</td><td>${(w.k+sum.k).toFixed(1)}</td>
-        <td>${(w.ca+sum.ca).toFixed(1)}</td><td>${(w.mg+sum.mg).toFixed(1)}</td><td>${(w.s+sum.s).toFixed(1)}</td></tr>`;
+        <td><span class="nutrient-value">${(w.n+sum.n).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+        <td><span class="nutrient-value">${(w.p+sum.p).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+        <td><span class="nutrient-value">${(w.k+sum.k).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+        <td><span class="nutrient-value">${(w.ca+sum.ca).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+        <td><span class="nutrient-value">${(w.mg+sum.mg).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
+        <td><span class="nutrient-value">${(w.s+sum.s).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     document.getElementById('macro-body').innerHTML = macroHTML;
 
     let microHTML = '';
     if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
         microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
-            <td>${w.b.toFixed(2)}</td><td>${w.cu.toFixed(2)}</td><td>${w.fe.toFixed(2)}</td>
-            <td>${w.mn.toFixed(2)}</td><td>${w.mo.toFixed(2)}</td><td>${w.zn.toFixed(2)}</td>
-            <td>${w.si.toFixed(1)}</td></tr>`;
+            <td><span class="nutrient-value">${w.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.fe.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.mn.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.mo.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.zn.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${w.si.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     }
     used.forEach(u=>{
         if(u.b>0||u.cu>0||u.fe>0||u.mn>0||u.mo>0||u.zn>0||u.si>0){
             microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
-                <td>${u.b.toFixed(2)}</td><td>${u.cu.toFixed(2)}</td><td>${u.fe.toFixed(2)}</td>
-                <td>${u.mn.toFixed(2)}</td><td>${u.mo.toFixed(2)}</td><td>${u.zn.toFixed(2)}</td>
-                <td>${u.si.toFixed(1)}</td></tr>`;
+                <td><span class="nutrient-value">${u.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.fe.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.mn.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.mo.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.zn.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+                <td><span class="nutrient-value">${u.si.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
         }
     });
     if(microHTML || sum.si > 0){
         microHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
-            <td>${(w.b+sum.b).toFixed(2)}</td><td>${(w.cu+sum.cu).toFixed(2)}</td><td>${(w.fe+sum.fe).toFixed(2)}</td>
-            <td>${(w.mn+sum.mn).toFixed(2)}</td><td>${(w.mo+sum.mo).toFixed(2)}</td><td>${(w.zn+sum.zn).toFixed(2)}</td>
-            <td>${(w.si+sum.si).toFixed(1)}</td></tr>`;
+            <td><span class="nutrient-value">${(w.b+sum.b).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.cu+sum.cu).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.fe+sum.fe).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.mn+sum.mn).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.mo+sum.mo).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.zn+sum.zn).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
+            <td><span class="nutrient-value">${(w.si+sum.si).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     } else {
         microHTML = '<tr><td colspan="9" style="text-align:center;color:#888">Keine Mikronährstoffe vorhanden</td></tr>';
     }
