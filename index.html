@@ -169,7 +169,7 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 
 <div class='container'>
 <h2>🌱 Bobby's Düngerrechner 🌱</h2>
-<p class='version'>Version 4.0 (2025-11-12) - Komplett-Update</p>
+<p class='version'>Version 4.1 (2025-11-12) - CSV Integration</p>
 
 <div class='section'>
 <h3>💧 Wasser & Volumen</h3>
@@ -331,47 +331,58 @@ const OXID_FACTORS = {
     mg: 0.6030  // MgO → Mg
 };
 
-// Standard-Dünger
-const STANDARD_FERTS = [
-  // Terra Aquatica (Flüssig - ml)
-  {name:"Terra Aquatica Calcium/Magnesium",unit:"ml",n:25.0,p:0,k:0,ca:28.6,mg:6.0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Terra Aquatica FinalPart",unit:"ml",n:0,p:31.6,k:50.1,ca:0,mg:21.8,s:24.1,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Terra Aquatica TriPart Bloom",unit:"ml",n:0,p:25.4,k:38.6,ca:0,mg:21,s:23.2,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Terra Aquatica TriPart Grow",unit:"ml",n:34.2,p:5,k:56.8,ca:0,mg:5.5,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Terra Aquatica TriPart Micro Hard Water",unit:"ml",n:55.4,p:0,k:12,ca:11.1,mg:0,s:0,b:1.1,cu:1.1,fe:13.3,mn:7.8,mo:0.2,zn:2.2,si:0},
-  {name:"Terra Aquatica TriPart Micro Soft Water",unit:"ml",n:62.5,p:0,k:13.5,ca:53.6,mg:0,s:0,b:0.13,cu:0.13,fe:1.5,mn:0.88,mo:0.03,zn:0.25,si:0},
-  
-  // Canna (Flüssig - ml)
-  {name:"Canna Mono Calcium",unit:"ml",n:70.6,p:0,k:0,ca:106.4,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Canna Mono Magnesium",unit:"ml",n:0,p:0,k:0,ca:0,mg:51.9,s:68.9,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  
-  // Hesi (Flüssig - ml)
-  {name:"Hesi Boost",unit:"ml",n:0,p:4.4,k:8.3,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Hesi Hesilicio",unit:"ml",n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:14.0},
-  {name:"Hesi PK 13/14",unit:"ml",n:0,p:39.3,k:59.8,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  
-  // Pulverdünger (Fest - g)
-  {name:"Bittersalz",unit:"g",n:0,p:0,k:0,ca:0,mg:98.6,s:130,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Haifa Cal GG Calciumnitrat",unit:"g",n:155,p:0,k:0,ca:189.5,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Haifa SOP Bio Kaliumsulfat",unit:"g",n:0,p:0,k:431.7,ca:0,mg:0,s:180,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"SHINE",unit:"g",n:0,p:95.9,k:99.6,ca:0,mg:10,s:20,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"VBX",unit:"g",n:70,p:17.4,k:91.3,ca:70.1,mg:25,s:45,b:0.2,cu:0,fe:1,mn:0.5,mo:0,zn:0,si:0}
-];
+// Standard-Dünger (LEER - alles kommt aus CSV!)
+const STANDARD_FERTS = [];
 
 let fertCounter = 0;
 let currentSearchTerm = '';
 let userFerts = [];
 let waterValues = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
 let searchTimeout;
+let ALL_FERTS = []; // Wird von CSV geladen
 
-// Alle verfügbaren Dünger (Standard + Benutzer)
-function getAllFerts() {
-    return [...STANDARD_FERTS, ...userFerts];
+// === CSV LADEN ===
+async function loadAllFertsFromCSV() {
+    try {
+        const response = await fetch('./data/fertilizers.csv');
+        if (!response.ok) throw new Error('CSV nicht gefunden');
+        const csvText = await response.text();
+        const ferts = parseCSV(csvText);
+        console.log(`${ferts.length} Dünger von CSV geladen`);
+        return ferts;
+    } catch (error) {
+        console.log("CSV nicht geladen, nutze leere Liste");
+        return [];
+    }
 }
 
-// Neue Fehler-Funktionen
+function parseCSV(csvText) {
+    const lines = csvText.trim().split('\n');
+    const headers = lines[0].split(';').map(h => h.trim());
+    
+    return lines.slice(1).filter(line => line.trim()).map(line => {
+        const values = line.split(';').map(v => v.trim());
+        const fert = {};
+        
+        headers.forEach((header, index) => {
+            let value = values[index] || '0';
+            if (header !== 'name' && header !== 'unit') {
+                value = parseFloat(value.replace(',', '.')) || 0;
+            }
+            fert[header] = value;
+        });
+        
+        return fert;
+    });
+}
+
+// Alle verfügbaren Dünger
+function getAllFerts() {
+    return [...ALL_FERTS, ...userFerts];
+}
+
+// === FEHLER-FUNKTIONEN ===
 function showError(message) {
-    // Alte Fehler entfernen
     document.querySelectorAll('.error-message').forEach(el => el.remove());
     
     const errorDiv = document.createElement('div');
@@ -417,19 +428,18 @@ function validateInputs() {
         return false;
     }
     
-    // Erfolg - Rote Rahmen entfernen
     document.getElementById('vol').style.borderColor = '';
     document.getElementById('ro').style.borderColor = '';
     return true;
 }
 
-// Options-Menü
+// === OPTIONS-MENÜ ===
 function toggleOptions() {
     const menu = document.getElementById('options-menu');
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 }
 
-// Modal-Funktionen
+// === MODAL-FUNKTIONEN ===
 function showWaterModal() {
     closeAllModals();
     loadWaterValues();
@@ -468,7 +478,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Wasserwerte speichern
+// === WASSERWERTE ===
 function saveWaterValues() {
     waterValues = {
         n: parseFloat(document.getElementById('water_n').value) || 0,
@@ -490,7 +500,6 @@ function saveWaterValues() {
     calc();
 }
 
-// Wasserwerte laden
 function loadWaterValues() {
     const saved = localStorage.getItem('waterValues');
     if (saved) {
@@ -511,7 +520,7 @@ function loadWaterValues() {
     }
 }
 
-// Neuen Dünger speichern
+// === DÜNGER VERWALTUNG ===
 function saveNewFert() {
     const name = document.getElementById('new-fert-name').value.trim();
     const unit = document.getElementById('new-fert-unit').value;
@@ -521,11 +530,10 @@ function saveNewFert() {
         return;
     }
     
-    // Prozent in mg/ml umrechnen mit Oxid-Faktoren
     const newFert = {
         name: name,
         unit: unit,
-        n: (parseFloat(document.getElementById('new-fert-n').value) || 0) * 10, // % × 10 = mg/ml
+        n: (parseFloat(document.getElementById('new-fert-n').value) || 0) * 10,
         p: (parseFloat(document.getElementById('new-fert-p').value) || 0) * 10 * OXID_FACTORS.p,
         k: (parseFloat(document.getElementById('new-fert-k').value) || 0) * 10 * OXID_FACTORS.k,
         ca: (parseFloat(document.getElementById('new-fert-ca').value) || 0) * 10 * OXID_FACTORS.ca,
@@ -543,7 +551,6 @@ function saveNewFert() {
     userFerts.push(newFert);
     localStorage.setItem('userFerts', JSON.stringify(userFerts));
     
-    // Formular zurücksetzen
     document.getElementById('new-fert-name').value = '';
     document.querySelectorAll('#add-fert-modal input[type="number"]').forEach(input => {
         input.value = '0';
@@ -553,7 +560,6 @@ function saveNewFert() {
     alert('Dünger erfolgreich gespeichert!');
 }
 
-// Dünger löschen Liste laden
 function loadDeleteFertList() {
     const container = document.getElementById('delete-fert-list');
     if (userFerts.length === 0) {
@@ -573,7 +579,6 @@ function loadDeleteFertList() {
     container.innerHTML = html;
 }
 
-// Ausgewählte Dünger löschen
 function deleteSelectedFerts() {
     const indicesToDelete = [];
     userFerts.forEach((fert, index) => {
@@ -588,7 +593,6 @@ function deleteSelectedFerts() {
         return;
     }
     
-    // Von hinten nach vorne löschen um Indizes beizubehalten
     indicesToDelete.sort((a, b) => b - a).forEach(index => {
         userFerts.splice(index, 1);
     });
@@ -598,7 +602,6 @@ function deleteSelectedFerts() {
     alert('Dünger erfolgreich gelöscht!');
 }
 
-// Benutzer-Dünger laden
 function loadUserFerts() {
     const saved = localStorage.getItem('userFerts');
     if (saved) {
@@ -606,7 +609,6 @@ function loadUserFerts() {
     }
 }
 
-// Reset aller Dünger
 function resetAllFerts() {
     const container = document.getElementById('fert-container');
     container.innerHTML = '';
@@ -615,7 +617,7 @@ function resetAllFerts() {
     calc();
 }
 
-// Suchfunktion mit Performance-Optimierung
+// === SUCHFUNKTION ===
 function filterFerts() {
     const searchTerm = document.getElementById('fert-search').value.toLowerCase().trim();
     currentSearchTerm = searchTerm;
@@ -626,7 +628,6 @@ function filterFerts() {
         return;
     }
     
-    // Debouncing - wartet 300ms bis zur Suche
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const allFerts = getAllFerts();
@@ -666,7 +667,6 @@ function filterFerts() {
     }, 300);
 }
 
-// Dünger aus Autocomplete auswählen
 function selectFert(fertIndex) {
     addFertRowWithSelection(fertIndex);
     document.getElementById('fert-search').value = '';
@@ -674,7 +674,6 @@ function selectFert(fertIndex) {
     currentSearchTerm = '';
 }
 
-// Neue Zeile mit vorgewähltem Dünger hinzufügen
 function addFertRowWithSelection(fertIndex) {
     const allFerts = getAllFerts();
     if (fertIndex >= allFerts.length) return;
@@ -702,7 +701,6 @@ function addFertRowWithSelection(fertIndex) {
     calc();
 }
 
-// Suchfeld leeren
 function clearSearch() {
     document.getElementById('fert-search').value = '';
     document.getElementById('autocomplete-list').style.display = 'none';
@@ -733,7 +731,6 @@ function addFertRow() {
     calc();
 }
 
-// Einheit aktualisieren wenn Dünger gewählt wird
 function updateUnit(selectElement) {
     const row = selectElement.closest('.fert-row');
     const unitSpan = row.querySelector('.unit');
@@ -756,8 +753,8 @@ function removeFertRow(id) {
     }
 }
 
+// === HAUPTBERECHNUNG ===
 function calc() {
-    // Input-Validierung ZUERST
     if (!validateInputs()) {
         return;
     }
@@ -765,7 +762,6 @@ function calc() {
     const vol = parseFloat(document.getElementById('vol').value) || 0;
     const ro = parseFloat(document.getElementById('ro').value) || 0;
     
-    // Verhindere negative Werte in Dünger-Inputs
     document.querySelectorAll('.fert-row input[type="number"]').forEach(input => {
         if (input.value < 0) input.value = 0;
     });
@@ -824,7 +820,6 @@ function calc() {
 
     saveInputs();
 
-    // Wasserwerte mit Osmose-Anteil berechnen
     const w = {
         n: waterValues.n * tap / 100,
         p: waterValues.p * tap / 100,
@@ -841,7 +836,6 @@ function calc() {
         si: waterValues.si * tap / 100
     };
 
-    // Makro-Tabelle
     let macroHTML = '';
     if(tap>0 && (w.n>0||w.p>0||w.k>0||w.ca>0||w.mg>0||w.s>0)){
         macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
@@ -870,7 +864,6 @@ function calc() {
         <td><span class="nutrient-value">${(w.s+sum.s).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     document.getElementById('macro-body').innerHTML = macroHTML;
 
-    // Mikro-Tabelle
     let microHTML = '';
     if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
         microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
@@ -908,7 +901,6 @@ function calc() {
     }
     document.getElementById('micro-body').innerHTML = microHTML;
 
-    // Dosierungs-Zusammenfassung
     if(dosierungList.length > 0) {
         document.getElementById('dosierung-section').style.display = 'block';
         document.getElementById('summary-volume').textContent = vol + ' Liter';
@@ -928,7 +920,7 @@ function calc() {
     }
 }
 
-// Theme Toggle
+// === THEME TOGGLE ===
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById('theme-btn');
@@ -947,7 +939,7 @@ function toggleTheme() {
     }
 }
 
-// Local Storage für Eingaben
+// === LOCAL STORAGE ===
 function saveInputs() {
     const inputs = ['vol', 'ro'];
     inputs.forEach(id => {
@@ -964,18 +956,17 @@ function loadInputs() {
     });
 }
 
-// Initialisierung
-window.onload = function() {
-    // === STORAGE CLEANUP ===
-    const currentVersion = '4.0';
+// === INITIALISIERUNG ===
+window.onload = async function() {
+    const currentVersion = '4.1';
     const savedVersion = localStorage.getItem('appVersion');
     
     if (savedVersion !== currentVersion) {
-        console.log('Alte Daten gefunden - cleanup...');
         localStorage.clear();
         localStorage.setItem('appVersion', currentVersion);
     }
-    // === ENDE CLEANUP ===
+    
+    ALL_FERTS = await loadAllFertsFromCSV();
     
     const savedTheme = localStorage.getItem('theme');
     if(savedTheme === 'light') {
@@ -990,7 +981,6 @@ window.onload = function() {
     addFertRow();
     calc();
     
-    // Verhindere negative Werte in allen Inputs
     document.querySelectorAll('input[type="number"]').forEach(input => {
         input.addEventListener('change', function() {
             if (this.value < 0) this.value = 0;
