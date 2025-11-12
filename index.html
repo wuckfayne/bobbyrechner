@@ -140,6 +140,16 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 .autocomplete-item:last-child{border-bottom:none}
 .autocomplete-highlight{color:#8b5cf6;font-weight:700}
 
+/* Error Message Styles */
+.error-message {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
 @media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.water-inputs{grid-template-columns:repeat(2,1fr)}.nutrient-grid{grid-template-columns:1fr}}
@@ -166,7 +176,7 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 <div class='inline-group'>
 <div>
 <label>Volumen (Liter)</label>
-<input id='vol' value='10' type='number' step='0.1' oninput='calc()'>
+<input id='vol' value='10' type='number' step='0.1' min='0' oninput='calc()'>
 </div>
 <div>
 <label>Anteil Osmose-Wasser (%)</label>
@@ -352,10 +362,65 @@ let fertCounter = 0;
 let currentSearchTerm = '';
 let userFerts = [];
 let waterValues = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
+let searchTimeout;
 
 // Alle verfügbaren Dünger (Standard + Benutzer)
 function getAllFerts() {
     return [...STANDARD_FERTS, ...userFerts];
+}
+
+// Neue Fehler-Funktionen
+function showError(message) {
+    // Alte Fehler entfernen
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #ef4444;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    `;
+    errorDiv.textContent = message;
+    document.body.appendChild(errorDiv);
+    
+    setTimeout(() => errorDiv.remove(), 5000);
+}
+
+function validateInputs() {
+    const vol = parseFloat(document.getElementById('vol').value) || 0;
+    const ro = parseFloat(document.getElementById('ro').value) || 0;
+    
+    if (vol <= 0) {
+        showError("❌ Bitte gib ein gültiges Volumen größer 0 Liter ein");
+        document.getElementById('vol').style.borderColor = '#ef4444';
+        return false;
+    }
+    
+    if (vol > 10000) {
+        showError("❌ Volumen sollte unter 10.000 Liter bleiben");
+        document.getElementById('vol').style.borderColor = '#ef4444';
+        return false;
+    }
+    
+    if (ro < 0 || ro > 100) {
+        showError("❌ Osmose-Wasser Anteil muss zwischen 0% und 100% liegen");
+        document.getElementById('ro').style.borderColor = '#ef4444';
+        return false;
+    }
+    
+    // Erfolg - Rote Rahmen entfernen
+    document.getElementById('vol').style.borderColor = '';
+    document.getElementById('ro').style.borderColor = '';
+    return true;
 }
 
 // Options-Menü
@@ -550,7 +615,7 @@ function resetAllFerts() {
     calc();
 }
 
-// Suchfunktion
+// Suchfunktion mit Performance-Optimierung
 function filterFerts() {
     const searchTerm = document.getElementById('fert-search').value.toLowerCase().trim();
     currentSearchTerm = searchTerm;
@@ -561,40 +626,44 @@ function filterFerts() {
         return;
     }
     
-    const allFerts = getAllFerts();
-    const filteredFerts = allFerts.filter(fert => 
-        fert.name.toLowerCase().includes(searchTerm)
-    );
-    
-    if (filteredFerts.length === 0) {
-        autocompleteList.innerHTML = '<div class="autocomplete-item">Keine Dünger gefunden</div>';
-        autocompleteList.style.display = 'block';
-        return;
-    }
-    
-    let html = '';
-    filteredFerts.forEach((fert, index) => {
-        const name = fert.name;
-        const lowerName = name.toLowerCase();
-        const startIndex = lowerName.indexOf(searchTerm);
+    // Debouncing - wartet 300ms bis zur Suche
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const allFerts = getAllFerts();
+        const filteredFerts = allFerts.filter(fert => 
+            fert.name.toLowerCase().includes(searchTerm)
+        );
         
-        if (startIndex !== -1) {
-            const before = name.substring(0, startIndex);
-            const match = name.substring(startIndex, startIndex + searchTerm.length);
-            const after = name.substring(startIndex + searchTerm.length);
-            
-            html += `
-                <div class="autocomplete-item" onclick="selectFert(${index})" onmouseover="this.style.background='rgba(139,92,246,0.2)'" onmouseout="this.style.background=''">
-                    ${before}<span class="autocomplete-highlight">${match}</span>${after}
-                </div>
-            `;
-        } else {
-            html += `<div class="autocomplete-item" onclick="selectFert(${index})">${name}</div>`;
+        if (filteredFerts.length === 0) {
+            autocompleteList.innerHTML = '<div class="autocomplete-item">Keine Dünger gefunden</div>';
+            autocompleteList.style.display = 'block';
+            return;
         }
-    });
-    
-    autocompleteList.innerHTML = html;
-    autocompleteList.style.display = 'block';
+        
+        let html = '';
+        filteredFerts.forEach((fert, index) => {
+            const name = fert.name;
+            const lowerName = name.toLowerCase();
+            const startIndex = lowerName.indexOf(searchTerm);
+            
+            if (startIndex !== -1) {
+                const before = name.substring(0, startIndex);
+                const match = name.substring(startIndex, startIndex + searchTerm.length);
+                const after = name.substring(startIndex + searchTerm.length);
+                
+                html += `
+                    <div class="autocomplete-item" onclick="selectFert(${index})" onmouseover="this.style.background='rgba(139,92,246,0.2)'" onmouseout="this.style.background=''">
+                        ${before}<span class="autocomplete-highlight">${match}</span>${after}
+                    </div>
+                `;
+            } else {
+                html += `<div class="autocomplete-item" onclick="selectFert(${index})">${name}</div>`;
+            }
+        });
+        
+        autocompleteList.innerHTML = html;
+        autocompleteList.style.display = 'block';
+    }, 300);
 }
 
 // Dünger aus Autocomplete auswählen
@@ -623,7 +692,7 @@ function addFertRowWithSelection(fertIndex) {
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="1.0" oninput="calc()">
+        <input type="number" step="0.01" value="1.0" min="0" oninput="calc()">
         <span class="unit">${allFerts[fertIndex].unit}/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
@@ -654,7 +723,7 @@ function addFertRow() {
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="1.0" oninput="calc()">
+        <input type="number" step="0.01" value="1.0" min="0" oninput="calc()">
         <span class="unit">ml/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
@@ -688,20 +757,19 @@ function removeFertRow(id) {
 }
 
 function calc() {
-    const vol = parseFloat(document.getElementById('vol').value) || 0;
-    const volElement = document.getElementById('vol');
-    
-    if(vol <= 0) {
-        document.getElementById('macro-body').innerHTML = '<tr><td colspan="8" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
-        document.getElementById('micro-body').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
-        document.getElementById('dosierung-section').style.display = 'none';
-        volElement.style.borderColor = '#ef4444';
+    // Input-Validierung ZUERST
+    if (!validateInputs()) {
         return;
-    } else {
-        volElement.style.borderColor = '';
     }
-
+    
+    const vol = parseFloat(document.getElementById('vol').value) || 0;
     const ro = parseFloat(document.getElementById('ro').value) || 0;
+    
+    // Verhindere negative Werte in Dünger-Inputs
+    document.querySelectorAll('.fert-row input[type="number"]').forEach(input => {
+        if (input.value < 0) input.value = 0;
+    });
+
     const tap = 100 - ro;
 
     const fertRows = document.querySelectorAll('.fert-row');
@@ -898,6 +966,17 @@ function loadInputs() {
 
 // Initialisierung
 window.onload = function() {
+    // === STORAGE CLEANUP ===
+    const currentVersion = '4.0';
+    const savedVersion = localStorage.getItem('appVersion');
+    
+    if (savedVersion !== currentVersion) {
+        console.log('Alte Daten gefunden - cleanup...');
+        localStorage.clear();
+        localStorage.setItem('appVersion', currentVersion);
+    }
+    // === ENDE CLEANUP ===
+    
     const savedTheme = localStorage.getItem('theme');
     if(savedTheme === 'light') {
         document.body.classList.remove('dark');
@@ -910,6 +989,13 @@ window.onload = function() {
     loadWaterValues();
     addFertRow();
     calc();
+    
+    // Verhindere negative Werte in allen Inputs
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.value < 0) this.value = 0;
+        });
+    });
 };
 </script>
 </body>
