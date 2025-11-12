@@ -80,6 +80,26 @@ body.light .result-row{background:linear-gradient(135deg,rgba(34,197,94,0.1),rgb
 .result-row td{font-weight:800;border-top:2px solid rgba(34,197,94,0.3);font-size:1.05em;transition:color 0.5s}
 body.dark .result-row td{color:#34d399}
 body.light .result-row td{color:#059669}
+
+/* Suchfunktion Styles */
+.search-container{position:relative;margin-bottom:15px}
+.search-input{width:100%;padding:12px 45px 12px 16px;border-radius:12px;font-size:1em}
+body.dark .search-input{background:rgba(15,23,42,0.9);color:#e4e7eb;border:1px solid rgba(139,92,246,0.3)}
+body.light .search-input{background:rgba(255,255,255,0.95);color:#1e293b;border:1px solid rgba(139,92,246,0.4)}
+.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#64748b;cursor:pointer;font-size:1.2em;padding:4px;transition:color 0.3s}
+.search-clear:hover{color:#ef4444}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:inherit;border-radius:0 0 12px 12px;max-height:200px;overflow-y:auto;z-index:100;box-shadow:0 8px 25px rgba(0,0,0,0.3);margin-top:2px}
+body.dark .autocomplete-list{background:rgba(30,41,59,0.95);border:1px solid rgba(139,92,246,0.3)}
+body.light .autocomplete-list{background:rgba(255,255,255,0.98);border:1px solid rgba(139,92,246,0.4)}
+.autocomplete-item{padding:12px 16px;cursor:pointer;transition:all 0.2s;border-bottom:1px solid rgba(255,255,255,0.05)}
+body.dark .autocomplete-item{border-bottom:1px solid rgba(255,255,255,0.08)}
+body.light .autocomplete-item{border-bottom:1px solid rgba(0,0,0,0.08)}
+.autocomplete-item:hover{background:rgba(139,92,246,0.2)}
+body.dark .autocomplete-item:hover{background:rgba(139,92,246,0.15)}
+body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-highlight{color:#8b5cf6;font-weight:700}
+
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
 @media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.water-inputs{grid-template-columns:repeat(4,1fr)}}
@@ -90,7 +110,7 @@ body.light .result-row td{color:#059669}
 <button onclick='toggleTheme()' id='theme-btn' class='theme-toggle'>🌙</button>
 <div class='container'>
 <h2>🌱 Bobby's Düngerrechner 🌱</h2>
-<p class='version'>Version 3.1 (2025-11-12) - Mit Silikat & neuen Düngern</p>
+<p class='version'>Version 3.2 (2025-11-12) - Mit Suchfunktion</p>
 
 <div class='section'>
 <h3>💧 Wasser & Volumen</h3>
@@ -127,6 +147,11 @@ body.light .result-row td{color:#059669}
 
 <div class='section'>
 <h3>🧪 Dünger</h3>
+<div class="search-container">
+    <input type="text" id="fert-search" class="search-input" placeholder="🔍 Dünger suchen... (z.B. 'Hesi', 'PK', 'Calcium')" oninput="filterFerts()">
+    <button class="search-clear" onclick="clearSearch()">×</button>
+    <div id="autocomplete-list" class="autocomplete-list" style="display:none"></div>
+</div>
 <div id="fert-container"></div>
 <button class="add-btn" onclick="addFertRow()">➕ Dünger hinzufügen</button>
 </div>
@@ -158,217 +183,322 @@ body.light .result-row td{color:#059669}
 </div>
 <script>
 const FERTS = [
+  // Terra Aquatica (Flüssig - ml)
+  {name:"Terra Aquatica Calcium/Magnesium",unit:"ml",n:25.0,p:0,k:0,ca:28.6,mg:6.0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Terra Aquatica FinalPart",unit:"ml",n:0,p:31.6,k:50.1,ca:0,mg:21.8,s:24.1,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Terra Aquatica TriPart Grow",unit:"ml",n:34.2,p:5,k:56.8,ca:0,mg:5.5,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Terra Aquatica TriPart Bloom",unit:"ml",n:0,p:25.4,k:38.6,ca:0,mg:21,s:23.2,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
+  {name:"Terra Aquatica TriPart Grow",unit:"ml",n:34.2,p:5,k:56.8,ca:0,mg:5.5,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Terra Aquatica TriPart Micro Hard Water",unit:"ml",n:55.4,p:0,k:12,ca:11.1,mg:0,s:0,b:1.1,cu:1.1,fe:13.3,mn:7.8,mo:0.2,zn:2.2,si:0},
   {name:"Terra Aquatica TriPart Micro Soft Water",unit:"ml",n:62.5,p:0,k:13.5,ca:53.6,mg:0,s:0,b:0.13,cu:0.13,fe:1.5,mn:0.88,mo:0.03,zn:0.25,si:0},
+  
+  // Canna (Flüssig - ml)
   {name:"Canna Mono Calcium",unit:"ml",n:70.6,p:0,k:0,ca:106.4,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Canna Mono Magnesium",unit:"ml",n:0,p:0,k:0,ca:0,mg:51.9,s:68.9,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Haifa SOP Bio Kaliumsulfat",unit:"g",n:0,p:0,k:431.7,ca:0,mg:0,s:180,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
+  
+  // Hesi (Flüssig - ml)
+  {name:"Hesi Boost",unit:"ml",n:0,p:4.4,k:8.3,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
+  {name:"Hesi Hesilicio",unit:"ml",n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:14.0},
+  {name:"Hesi PK 13/14",unit:"ml",n:0,p:39.3,k:59.8,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
+  
+  // Pulverdünger (Fest - g)
   {name:"Bittersalz",unit:"g",n:0,p:0,k:0,ca:0,mg:98.6,s:130,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Haifa Cal GG Calciumnitrat",unit:"g",n:155,p:0,k:0,ca:189.5,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"VBX",unit:"g",n:70,p:17.4,k:91.3,ca:70.1,mg:25,s:45,b:0.2,cu:0,fe:1,mn:0.5,mo:0,zn:0,si:0},
+  {name:"Haifa SOP Bio Kaliumsulfat",unit:"g",n:0,p:0,k:431.7,ca:0,mg:0,s:180,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"SHINE",unit:"g",n:0,p:95.9,k:99.6,ca:0,mg:10,s:20,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  // NEUE DÜNGER
-  {name:"Hesi PK 13/14",unit:"ml",n:0,p:39.3,k:59.8,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Hesi Boost",unit:"ml",n:0,p:4.4,k:8.3,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
-  {name:"Hesi Hesilioo",unit:"ml",n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:14.0},
-  {name:"Terra Aquatica Calcium/Magnesium",unit:"ml",n:25.0,p:0,k:0,ca:28.6,mg:6.0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0}
+  {name:"VBX",unit:"g",n:70,p:17.4,k:91.3,ca:70.1,mg:25,s:45,b:0.2,cu:0,fe:1,mn:0.5,mo:0,zn:0,si:0}
 ];
 
 let fertCounter = 0;
+let currentSearchTerm = '';
+
+// Suchfunktion
+function filterFerts() {
+    const searchTerm = document.getElementById('fert-search').value.toLowerCase().trim();
+    currentSearchTerm = searchTerm;
+    const autocompleteList = document.getElementById('autocomplete-list');
+    
+    if (searchTerm.length === 0) {
+        autocompleteList.style.display = 'none';
+        return;
+    }
+    
+    // Filtere Dünger die den Suchbegriff enthalten
+    const filteredFerts = FERTS.filter(fert => 
+        fert.name.toLowerCase().includes(searchTerm)
+    );
+    
+    if (filteredFerts.length === 0) {
+        autocompleteList.innerHTML = '<div class="autocomplete-item">Keine Dünger gefunden</div>';
+        autocompleteList.style.display = 'block';
+        return;
+    }
+    
+    // Erstelle Autocomplete-Liste mit Highlighting
+    let html = '';
+    filteredFerts.forEach((fert, index) => {
+        const name = fert.name;
+        const lowerName = name.toLowerCase();
+        const startIndex = lowerName.indexOf(searchTerm);
+        
+        if (startIndex !== -1) {
+            const before = name.substring(0, startIndex);
+            const match = name.substring(startIndex, startIndex + searchTerm.length);
+            const after = name.substring(startIndex + searchTerm.length);
+            
+            html += `
+                <div class="autocomplete-item" onclick="selectFert(${FERTS.indexOf(fert)})" onmouseover="this.style.background='rgba(139,92,246,0.2)'" onmouseout="this.style.background=''">
+                    ${before}<span class="autocomplete-highlight">${match}</span>${after}
+                </div>
+            `;
+        } else {
+            html += `<div class="autocomplete-item" onclick="selectFert(${FERTS.indexOf(fert)})">${name}</div>`;
+        }
+    });
+    
+    autocompleteList.innerHTML = html;
+    autocompleteList.style.display = 'block';
+}
+
+// Dünger aus Autocomplete auswählen
+function selectFert(fertIndex) {
+    addFertRowWithSelection(fertIndex);
+    document.getElementById('fert-search').value = '';
+    document.getElementById('autocomplete-list').style.display = 'none';
+    currentSearchTerm = '';
+}
+
+// Neue Zeile mit vorgewähltem Dünger hinzufügen
+function addFertRowWithSelection(fertIndex) {
+    const container = document.getElementById('fert-container');
+    const row = document.createElement('div');
+    row.className = 'fert-row';
+    row.id = 'fert-row-' + fertCounter;
+
+    let options = '<option value="">--Dünger wählen--</option>';
+    FERTS.forEach((f,i) => {
+        const selected = i === fertIndex ? 'selected' : '';
+        options += `<option value="${i}" ${selected}>${f.name}</option>`;
+    });
+
+    row.innerHTML = `
+        <select onchange="calc()">${options}</select>
+        <input type="number" step="0.01" value="0" oninput="calc()">
+        <span class="unit">${FERTS[fertIndex].unit}</span>
+        <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
+    `;
+
+    container.appendChild(row);
+    fertCounter++;
+    calc();
+}
+
+// Suchfeld leeren
+function clearSearch() {
+    document.getElementById('fert-search').value = '';
+    document.getElementById('autocomplete-list').style.display = 'none';
+    currentSearchTerm = '';
+}
+
+// Klick außerhalb schließt Autocomplete
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.search-container')) {
+        document.getElementById('autocomplete-list').style.display = 'none';
+    }
+});
 
 function addFertRow() {
-  const container = document.getElementById('fert-container');
-  const row = document.createElement('div');
-  row.className = 'fert-row';
-  row.id = 'fert-row-' + fertCounter;
+    const container = document.getElementById('fert-container');
+    const row = document.createElement('div');
+    row.className = 'fert-row';
+    row.id = 'fert-row-' + fertCounter;
 
-  // Dropdown für Dünger
-  let options = '<option value="">--Dünger wählen--</option>';
-  FERTS.forEach((f,i) => {
-    options += `<option value="${i}">${f.name}</option>`;
-  });
+    let options = '<option value="">--Dünger wählen--</option>';
+    FERTS.forEach((f,i) => {
+        options += `<option value="${i}">${f.name}</option>`;
+    });
 
-  row.innerHTML = `
-    <select onchange="calc()">${options}</select>
-    <input type="number" step="0.01" value="0" oninput="calc()">
-    <span class="unit">ml/g</span>
-    <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
-  `;
+    row.innerHTML = `
+        <select onchange="updateUnit(this)">${options}</select>
+        <input type="number" step="0.01" value="0" oninput="calc()">
+        <span class="unit">ml</span>
+        <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
+    `;
 
-  container.appendChild(row);
-  fertCounter++;
-  calc();
+    container.appendChild(row);
+    fertCounter++;
+    calc();
+}
+
+// Einheit aktualisieren wenn Dünger gewählt wird
+function updateUnit(selectElement) {
+    const row = selectElement.closest('.fert-row');
+    const unitSpan = row.querySelector('.unit');
+    const selectedIndex = parseInt(selectElement.value);
+    
+    if (!isNaN(selectedIndex) && selectedIndex >= 0) {
+        unitSpan.textContent = FERTS[selectedIndex].unit;
+    } else {
+        unitSpan.textContent = 'ml';
+    }
+    calc();
 }
 
 function removeFertRow(id) {
-  const row = document.getElementById(id);
-  if(row) {
-    row.remove();
-    calc();
-  }
+    const row = document.getElementById(id);
+    if(row) {
+        row.remove();
+        calc();
+    }
 }
 
 function calc() {
-  const vol = parseFloat(document.getElementById('vol').value) || 0;
-  if(vol <= 0) {
-    // Fehlermeldung anzeigen
-    document.getElementById('macro-body').innerHTML = '<tr><td colspan="8" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
-    document.getElementById('micro-body').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
-    return;
-  }
-
-  const ro = parseFloat(document.getElementById('ro').value) || 0;
-  const tap = 100 - ro;
-
-  const w = {
-    n: (parseFloat(document.getElementById('n').value) || 0) * tap / 100,
-    p: (parseFloat(document.getElementById('p').value) || 0) * tap / 100,
-    k: (parseFloat(document.getElementById('k').value) || 0) * tap / 100,
-    ca: (parseFloat(document.getElementById('ca').value) || 0) * tap / 100,
-    mg: (parseFloat(document.getElementById('mg').value) || 0) * tap / 100,
-    s: (parseFloat(document.getElementById('s').value) || 0) * tap / 100,
-    b: (parseFloat(document.getElementById('w_b').value) || 0) * tap / 100,
-    cu: (parseFloat(document.getElementById('w_cu').value) || 0) * tap / 100,
-    fe: (parseFloat(document.getElementById('w_fe').value) || 0) * tap / 100,
-    mn: (parseFloat(document.getElementById('w_mn').value) || 0) * tap / 100,
-    mo: (parseFloat(document.getElementById('w_mo').value) || 0) * tap / 100,
-    zn: (parseFloat(document.getElementById('w_zn').value) || 0) * tap / 100,
-    si: (parseFloat(document.getElementById('w_si').value) || 0) * tap / 100
-  };
-
-  const fertRows = document.querySelectorAll('.fert-row');
-  const used = [];
-  fertRows.forEach(row => {
-    const select = row.querySelector('select');
-    const input = row.querySelector('input');
-    const idx = parseInt(select.value);
-    const dose = parseFloat(input.value) || 0;
-    if(!isNaN(idx) && dose > 0) {
-      const f = FERTS[idx];
-      used.push({
-        name: f.name,
-        dose: dose,
-        unit: f.unit,
-        n: dose*f.n/vol, p: dose*f.p/vol, k: dose*f.k/vol,
-        ca: dose*f.ca/vol, mg: dose*f.mg/vol, s: dose*f.s/vol,
-        b: dose*f.b/vol, cu: dose*f.cu/vol, fe: dose*f.fe/vol,
-        mn: dose*f.mn/vol, mo: dose*f.mo/vol, zn: dose*f.zn/vol,
-        si: dose*f.si/vol
-      });
+    const vol = parseFloat(document.getElementById('vol').value) || 0;
+    if(vol <= 0) {
+        document.getElementById('macro-body').innerHTML = '<tr><td colspan="8" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
+        document.getElementById('micro-body').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
+        return;
     }
-  });
 
-  const sum = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
-  used.forEach(u => {
-    sum.n += u.n; sum.p += u.p; sum.k += u.k; sum.ca += u.ca; sum.mg += u.mg; sum.s += u.s;
-    sum.b += u.b; sum.cu += u.cu; sum.fe += u.fe; sum.mn += u.mn; sum.mo += u.mo; sum.zn += u.zn;
-    sum.si += u.si;
-  });
+    const ro = parseFloat(document.getElementById('ro').value) || 0;
+    const tap = 100 - ro;
 
-  // Eingaben speichern
-  saveInputs();
+    const w = {
+        n: (parseFloat(document.getElementById('n').value) || 0) * tap / 100,
+        p: (parseFloat(document.getElementById('p').value) || 0) * tap / 100,
+        k: (parseFloat(document.getElementById('k').value) || 0) * tap / 100,
+        ca: (parseFloat(document.getElementById('ca').value) || 0) * tap / 100,
+        mg: (parseFloat(document.getElementById('mg').value) || 0) * tap / 100,
+        s: (parseFloat(document.getElementById('s').value) || 0) * tap / 100,
+        b: (parseFloat(document.getElementById('w_b').value) || 0) * tap / 100,
+        cu: (parseFloat(document.getElementById('w_cu').value) || 0) * tap / 100,
+        fe: (parseFloat(document.getElementById('w_fe').value) || 0) * tap / 100,
+        mn: (parseFloat(document.getElementById('w_mn').value) || 0) * tap / 100,
+        mo: (parseFloat(document.getElementById('w_mo').value) || 0) * tap / 100,
+        zn: (parseFloat(document.getElementById('w_zn').value) || 0) * tap / 100,
+        si: (parseFloat(document.getElementById('w_si').value) || 0) * tap / 100
+    };
 
-  // Makro-Tabelle
-  let macroHTML = '';
-  if(tap>0){
-    macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
-      <td>${w.n.toFixed(1)}</td><td>${w.p.toFixed(1)}</td><td>${w.k.toFixed(1)}</td>
-      <td>${w.ca.toFixed(1)}</td><td>${w.mg.toFixed(1)}</td><td>${w.s.toFixed(1)}</td></tr>`;
-  }
-  used.forEach(u=>{
-    macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
-      <td>${u.n.toFixed(1)}</td><td>${u.p.toFixed(1)}</td><td>${u.k.toFixed(1)}</td>
-      <td>${u.ca.toFixed(1)}</td><td>${u.mg.toFixed(1)}</td><td>${u.s.toFixed(1)}</td></tr>`;
-  });
-  macroHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
-    <td>${(w.n+sum.n).toFixed(1)}</td><td>${(w.p+sum.p).toFixed(1)}</td><td>${(w.k+sum.k).toFixed(1)}</td>
-    <td>${(w.ca+sum.ca).toFixed(1)}</td><td>${(w.mg+sum.mg).toFixed(1)}</td><td>${(w.s+sum.s).toFixed(1)}</td></tr>`;
-  document.getElementById('macro-body').innerHTML = macroHTML;
+    const fertRows = document.querySelectorAll('.fert-row');
+    const used = [];
+    fertRows.forEach(row => {
+        const select = row.querySelector('select');
+        const input = row.querySelector('input');
+        const idx = parseInt(select.value);
+        const dose = parseFloat(input.value) || 0;
+        if(!isNaN(idx) && dose > 0) {
+            const f = FERTS[idx];
+            used.push({
+                name: f.name,
+                dose: dose,
+                unit: f.unit,
+                n: dose*f.n/vol, p: dose*f.p/vol, k: dose*f.k/vol,
+                ca: dose*f.ca/vol, mg: dose*f.mg/vol, s: dose*f.s/vol,
+                b: dose*f.b/vol, cu: dose*f.cu/vol, fe: dose*f.fe/vol,
+                mn: dose*f.mn/vol, mo: dose*f.mo/vol, zn: dose*f.zn/vol,
+                si: dose*f.si/vol
+            });
+        }
+    });
 
-  // Mikro-Tabelle (inklusive Silikat)
-  let microHTML = '';
-  if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
-    microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
-      <td>${w.b.toFixed(2)}</td><td>${w.cu.toFixed(2)}</td><td>${w.fe.toFixed(2)}</td>
-      <td>${w.mn.toFixed(2)}</td><td>${w.mo.toFixed(2)}</td><td>${w.zn.toFixed(2)}</td>
-      <td>${w.si.toFixed(1)}</td></tr>`;
-  }
-  used.forEach(u=>{
-    if(u.b>0||u.cu>0||u.fe>0||u.mn>0||u.mo>0||u.zn>0||u.si>0){
-      microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
-        <td>${u.b.toFixed(2)}</td><td>${u.cu.toFixed(2)}</td><td>${u.fe.toFixed(2)}</td>
-        <td>${u.mn.toFixed(2)}</td><td>${u.mo.toFixed(2)}</td><td>${u.zn.toFixed(2)}</td>
-        <td>${u.si.toFixed(1)}</td></tr>`;
+    const sum = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
+    used.forEach(u => {
+        sum.n += u.n; sum.p += u.p; sum.k += u.k; sum.ca += u.ca; sum.mg += u.mg; sum.s += u.s;
+        sum.b += u.b; sum.cu += u.cu; sum.fe += u.fe; sum.mn += u.mn; sum.mo += u.mo; sum.zn += u.zn;
+        sum.si += u.si;
+    });
+
+    saveInputs();
+
+    let macroHTML = '';
+    if(tap>0){
+        macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
+            <td>${w.n.toFixed(1)}</td><td>${w.p.toFixed(1)}</td><td>${w.k.toFixed(1)}</td>
+            <td>${w.ca.toFixed(1)}</td><td>${w.mg.toFixed(1)}</td><td>${w.s.toFixed(1)}</td></tr>`;
     }
-  });
-  if(microHTML || sum.si > 0){
-    microHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
-      <td>${(w.b+sum.b).toFixed(2)}</td><td>${(w.cu+sum.cu).toFixed(2)}</td><td>${(w.fe+sum.fe).toFixed(2)}</td>
-      <td>${(w.mn+sum.mn).toFixed(2)}</td><td>${(w.mo+sum.mo).toFixed(2)}</td><td>${(w.zn+sum.zn).toFixed(2)}</td>
-      <td>${(w.si+sum.si).toFixed(1)}</td></tr>`;
-  } else {
-    microHTML = '<tr><td colspan="9" style="text-align:center;color:#888">Keine Mikronährstoffe vorhanden</td></tr>';
-  }
-  document.getElementById('micro-body').innerHTML = microHTML;
+    used.forEach(u=>{
+        macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
+            <td>${u.n.toFixed(1)}</td><td>${u.p.toFixed(1)}</td><td>${u.k.toFixed(1)}</td>
+            <td>${u.ca.toFixed(1)}</td><td>${u.mg.toFixed(1)}</td><td>${u.s.toFixed(1)}</td></tr>`;
+    });
+    macroHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
+        <td>${(w.n+sum.n).toFixed(1)}</td><td>${(w.p+sum.p).toFixed(1)}</td><td>${(w.k+sum.k).toFixed(1)}</td>
+        <td>${(w.ca+sum.ca).toFixed(1)}</td><td>${(w.mg+sum.mg).toFixed(1)}</td><td>${(w.s+sum.s).toFixed(1)}</td></tr>`;
+    document.getElementById('macro-body').innerHTML = macroHTML;
+
+    let microHTML = '';
+    if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
+        microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
+            <td>${w.b.toFixed(2)}</td><td>${w.cu.toFixed(2)}</td><td>${w.fe.toFixed(2)}</td>
+            <td>${w.mn.toFixed(2)}</td><td>${w.mo.toFixed(2)}</td><td>${w.zn.toFixed(2)}</td>
+            <td>${w.si.toFixed(1)}</td></tr>`;
+    }
+    used.forEach(u=>{
+        if(u.b>0||u.cu>0||u.fe>0||u.mn>0||u.mo>0||u.zn>0||u.si>0){
+            microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
+                <td>${u.b.toFixed(2)}</td><td>${u.cu.toFixed(2)}</td><td>${u.fe.toFixed(2)}</td>
+                <td>${u.mn.toFixed(2)}</td><td>${u.mo.toFixed(2)}</td><td>${u.zn.toFixed(2)}</td>
+                <td>${u.si.toFixed(1)}</td></tr>`;
+        }
+    });
+    if(microHTML || sum.si > 0){
+        microHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
+            <td>${(w.b+sum.b).toFixed(2)}</td><td>${(w.cu+sum.cu).toFixed(2)}</td><td>${(w.fe+sum.fe).toFixed(2)}</td>
+            <td>${(w.mn+sum.mn).toFixed(2)}</td><td>${(w.mo+sum.mo).toFixed(2)}</td><td>${(w.zn+sum.zn).toFixed(2)}</td>
+            <td>${(w.si+sum.si).toFixed(1)}</td></tr>`;
+    } else {
+        microHTML = '<tr><td colspan="9" style="text-align:center;color:#888">Keine Mikronährstoffe vorhanden</td></tr>';
+    }
+    document.getElementById('micro-body').innerHTML = microHTML;
 }
 
 // Theme Toggle
 function toggleTheme() {
-  const body = document.body;
-  const btn = document.getElementById('theme-btn');
-  const isDark = body.classList.contains('dark');
-  
-  if(isDark) {
-    body.classList.remove('dark');
-    body.classList.add('light');
-    btn.textContent = '☀️';
-    localStorage.setItem('theme', 'light');
-  } else {
-    body.classList.remove('light');
-    body.classList.add('dark');
-    btn.textContent = '🌙';
-    localStorage.setItem('theme', 'dark');
-  }
+    const body = document.body;
+    const btn = document.getElementById('theme-btn');
+    const isDark = body.classList.contains('dark');
+    
+    if(isDark) {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        btn.textContent = '☀️';
+        localStorage.setItem('theme', 'light');
+    } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        btn.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+    }
 }
 
 // Local Storage für Eingaben
 function saveInputs() {
-  const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
-  inputs.forEach(id => {
-    const value = document.getElementById(id).value;
-    localStorage.setItem(id, value);
-  });
+    const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
+    inputs.forEach(id => {
+        const value = document.getElementById(id).value;
+        localStorage.setItem(id, value);
+    });
 }
 
 function loadInputs() {
-  const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
-  inputs.forEach(id => {
-    const saved = localStorage.getItem(id);
-    if(saved !== null) document.getElementById(id).value = saved;
-  });
+    const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
+    inputs.forEach(id => {
+        const saved = localStorage.getItem(id);
+        if(saved !== null) document.getElementById(id).value = saved;
+    });
 }
 
 // Initialisierung
 window.onload = function() {
-  // Gespeichertes Theme laden
-  const savedTheme = localStorage.getItem('theme');
-  if(savedTheme === 'light') {
-    document.body.classList.remove('dark');
-    document.body.classList.add('light');
-    document.getElementById('theme-btn').textContent = '☀️';
-  }
-  
-  // Gespeicherte Eingaben laden
-  loadInputs();
-  
-  // Erste Düngerzeile erstellen
-  addFertRow();
-  
-  // Erste Berechnung durchführen
-  calc();
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme === 'light') {
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        document.getElementById('theme-btn').textContent = '☀️';
+    }
+    
+    loadInputs();
+    addFertRow();
+    calc();
 };
 </script>
 </body>
