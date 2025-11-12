@@ -150,10 +150,40 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
     to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
+/* Instagram Link Styles */
+.instagram-link {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #8b5cf6, #ec4899, #06b6d4);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    font-size: 0.9em;
+}
+
+.instagram-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(139, 92, 246, 0.6);
+    color: white;
+}
+
+body.light .instagram-link {
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
 @media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.water-inputs{grid-template-columns:repeat(2,1fr)}.nutrient-grid{grid-template-columns:1fr}}
-@media(max-width:640px){.water-inputs{grid-template-columns:1fr}.inline-group{flex-direction:column}h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}}
+@media(max-width:640px){.water-inputs{grid-template-columns:1fr}.inline-group{flex-direction:column}h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}.instagram-link{bottom:15px;right:15px;padding:10px 14px;font-size:0.8em}}
 </style>
 </head>
 <body class="dark">
@@ -235,6 +265,11 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 </div>
 
 </div>
+
+<!-- Instagram Link -->
+<a href="https://www.instagram.com/thebobbygrow/" target="_blank" class="instagram-link">
+    📷 @thebobbygrow
+</a>
 
 <!-- Wasserwerte Modal -->
 <div id="water-modal" class="modal">
