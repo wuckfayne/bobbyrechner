@@ -962,7 +962,21 @@ window.onload = async function() {
     const savedVersion = localStorage.getItem('appVersion');
     
     if (savedVersion !== currentVersion) {
-        localStorage.clear();
+        // WICHTIGE DATEN BEHALTEN statt alles zu löschen!
+        const keepWaterValues = localStorage.getItem('waterValues');
+        const keepUserFerts = localStorage.getItem('userFerts');
+        const keepTheme = localStorage.getItem('theme');
+        const keepVol = localStorage.getItem('vol');
+        const keepRo = localStorage.getItem('ro');
+        
+        localStorage.clear(); // Alles löschen
+        
+        // Wichtige Daten wiederherstellen
+        if (keepWaterValues) localStorage.setItem('waterValues', keepWaterValues);
+        if (keepUserFerts) localStorage.setItem('userFerts', keepUserFerts);
+        if (keepTheme) localStorage.setItem('theme', keepTheme);
+        if (keepVol) localStorage.setItem('vol', keepVol);
+        if (keepRo) localStorage.setItem('ro', keepRo);
         localStorage.setItem('appVersion', currentVersion);
     }
     
