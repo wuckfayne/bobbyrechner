@@ -15,8 +15,9 @@ body.light::before{background:radial-gradient(circle at 20% 50%,rgba(139,92,246,
 .container{max-width:1400px;margin:0 auto;position:relative;z-index:1}
 h2{background:linear-gradient(135deg,#8b5cf6,#ec4899,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:8px;font-size:2.5em;font-weight:800;letter-spacing:-1px}
 .version{text-align:center;color:#64748b;margin-bottom:35px;font-size:0.9em;font-weight:500}
-.theme-toggle{position:absolute;top:20px;right:20px;background:rgba(139,92,246,0.2);border:2px solid rgba(139,92,246,0.3);color:#8b5cf6;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700;transition:all 0.3s;font-size:1.2em;z-index:10}
-.theme-toggle:hover{background:rgba(139,92,246,0.3);transform:scale(1.05)}
+.header-controls{position:absolute;top:20px;right:20px;display:flex;gap:12px;z-index:10}
+.theme-toggle,.options-btn{background:rgba(139,92,246,0.2);border:2px solid rgba(139,92,246,0.3);color:#8b5cf6;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700;transition:all 0.3s;font-size:1.2em}
+.theme-toggle:hover,.options-btn:hover{background:rgba(139,92,246,0.3);transform:scale(1.05)}
 .section{backdrop-filter:blur(20px);border-radius:16px;padding:24px;margin-bottom:24px;transition:transform 0.3s,box-shadow 0.3s,background 0.5s,border 0.5s}
 body.dark .section{background:rgba(30,41,59,0.7);border:1px solid rgba(255,255,255,0.06);box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05)}
 body.light .section{background:rgba(255,255,255,0.9);border:1px solid rgba(139,92,246,0.15);box-shadow:0 4px 20px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.5)}
@@ -44,13 +45,13 @@ body.dark td:first-child{color:#8b5cf6}
 body.light td:first-child{color:#7c3aed}
 .nutrient-value{font-weight:600;font-size:0.95em}
 .nutrient-unit{font-size:0.7em;color:#64748b;margin-left:2px;text-transform:none}
-input,select{padding:10px 12px;border-radius:10px;font-size:0.95em;width:100%;transition:all 0.3s;font-weight:500}
-body.dark input,body.dark select{background:rgba(15,23,42,0.8);color:#e4e7eb;border:1px solid rgba(139,92,246,0.2)}
-body.light input,body.light select{background:rgba(255,255,255,0.9);color:#1e293b;border:1px solid rgba(139,92,246,0.3)}
-input:focus,select:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15),0 4px 12px rgba(139,92,246,0.2)}
-body.dark input:focus,body.dark select:focus{background:rgba(15,23,42,0.95)}
-body.light input:focus,body.light select:focus{background:rgba(255,255,255,1)}
-input:hover,select:hover{border-color:rgba(139,92,246,0.4)}
+input,select,textarea{padding:10px 12px;border-radius:10px;font-size:0.95em;width:100%;transition:all 0.3s;font-weight:500}
+body.dark input,body.dark select,body.dark textarea{background:rgba(15,23,42,0.8);color:#e4e7eb;border:1px solid rgba(139,92,246,0.2)}
+body.light input,body.light select,body.light textarea{background:rgba(255,255,255,0.9);color:#1e293b;border:1px solid rgba(139,92,246,0.3)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15),0 4px 12px rgba(139,92,246,0.2)}
+body.dark input:focus,body.dark select:focus,body.dark textarea:focus{background:rgba(15,23,42,0.95)}
+body.light input:focus,body.light select:focus,body.light textarea:focus{background:rgba(255,255,255,1)}
+input:hover,select:hover,textarea:hover{border-color:rgba(139,92,246,0.4)}
 .fert-row{display:grid;grid-template-columns:2fr 120px 60px 40px;gap:12px;align-items:center;margin-bottom:12px;padding:14px;border-radius:12px;transition:all 0.3s}
 body.dark .fert-row{background:rgba(30,41,59,0.5);border:1px solid rgba(139,92,246,0.15)}
 body.light .fert-row{background:rgba(255,255,255,0.6);border:1px solid rgba(139,92,246,0.2)}
@@ -65,7 +66,10 @@ body.light .fert-row:hover{background:rgba(255,255,255,0.8);border-color:rgba(13
 .add-btn{background:linear-gradient(135deg,#8b5cf6,#06b6d4);color:#fff;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:12px;transition:all 0.3s;display:inline-flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(139,92,246,0.4);text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
 .add-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(139,92,246,0.6);background:linear-gradient(135deg,#7c3aed,#0891b2)}
 .add-btn:active{transform:translateY(-1px)}
-.water-inputs{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:18px}
+.reset-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:12px;transition:all 0.3s;display:inline-flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(245,158,11,0.4);text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
+.reset-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(245,158,11,0.6);background:linear-gradient(135deg,#eab308,#ca8a04)}
+.reset-btn:active{transform:translateY(-1px)}
+.water-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .water-input{display:flex;flex-direction:column}
 .water-input label{font-size:0.75em;margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:1px;transition:color 0.5s}
 body.dark .water-input label{color:#94a3b8}
@@ -82,6 +86,40 @@ body.light .result-row{background:linear-gradient(135deg,rgba(34,197,94,0.1),rgb
 .result-row td{font-weight:800;border-top:2px solid rgba(34,197,94,0.3);font-size:1.05em;transition:color 0.5s}
 body.dark .result-row td{color:#34d399}
 body.light .result-row td{color:#059669}
+.dosierung-summary{background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(6,182,212,0.1));border-radius:12px;padding:20px;margin-top:20px;border:1px solid rgba(139,92,246,0.2)}
+body.dark .dosierung-summary{background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(6,182,212,0.1))}
+body.light .dosierung-summary{background:linear-gradient(135deg,rgba(139,92,246,0.05),rgba(6,182,212,0.05))}
+.dosierung-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.dosierung-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px}
+body.light .dosierung-item{background:rgba(0,0,0,0.03)}
+.dosierung-name{font-weight:600}
+body.dark .dosierung-name{color:#8b5cf6}
+body.light .dosierung-name{color:#7c3aed}
+.dosierung-menge{font-weight:700;color:#06b6d4}
+
+/* Options-Menü Styles */
+.options-menu{position:absolute;top:60px;right:20px;background:inherit;border-radius:12px;padding:16px;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,0.4);z-index:1000;border:1px solid rgba(139,92,246,0.3);display:none}
+body.dark .options-menu{background:rgba(30,41,59,0.95)}
+body.light .options-menu{background:rgba(255,255,255,0.98)}
+.options-item{padding:12px 16px;cursor:pointer;border-radius:8px;transition:all 0.2s;margin-bottom:4px}
+.options-item:hover{background:rgba(139,92,246,0.2)}
+.options-item:last-child{margin-bottom:0}
+
+/* Modal Styles */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:2000;display:none}
+.modal-content{background:inherit;border-radius:16px;padding:24px;max-width:90%;max-height:90%;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.5);border:1px solid rgba(139,92,246,0.3)}
+body.dark .modal-content{background:rgba(30,41,59,0.95)}
+body.light .modal-content{background:rgba(255,255,255,0.98)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-close{background:none;border:none;font-size:1.5em;cursor:pointer;color:#64748b;padding:4px}
+.modal-close:hover{color:#ef4444}
+.nutrient-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px}
+.nutrient-input{display:flex;flex-direction:column}
+.nutrient-input label{font-size:0.75em;margin-bottom:4px;font-weight:600}
+.fert-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.05)}
+body.light .fert-item{background:rgba(0,0,0,0.03)}
+.fert-item-name{font-weight:600}
+.delete-fert-btn{background:#ef4444;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:0.8em}
 
 /* Suchfunktion Styles */
 .search-container{position:relative;margin-bottom:15px}
@@ -104,15 +142,24 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
-@media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.water-inputs{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:640px){.water-inputs{grid-template-columns:repeat(3,1fr)}.inline-group{flex-direction:column}h2{font-size:2em}}
+@media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.water-inputs{grid-template-columns:repeat(2,1fr)}.nutrient-grid{grid-template-columns:1fr}}
+@media(max-width:640px){.water-inputs{grid-template-columns:1fr}.inline-group{flex-direction:column}h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}}
 </style>
 </head>
 <body class="dark">
-<button onclick='toggleTheme()' id='theme-btn' class='theme-toggle'>🌙</button>
+<div class='header-controls'>
+    <button onclick='toggleTheme()' id='theme-btn' class='theme-toggle'>🌙</button>
+    <button onclick='toggleOptions()' class='options-btn'>⚙️ Optionen</button>
+    <div id='options-menu' class='options-menu'>
+        <div class='options-item' onclick='showWaterModal()'>💧 Wasserwerte</div>
+        <div class='options-item' onclick='showAddFertModal()'>➕ Dünger hinzufügen</div>
+        <div class='options-item' onclick='showDeleteFertModal()'>🗑️ Dünger löschen</div>
+    </div>
+</div>
+
 <div class='container'>
 <h2>🌱 Bobby's Düngerrechner 🌱</h2>
-<p class='version'>Version 3.2 (2025-11-12) - Mit Suchfunktion</p>
+<p class='version'>Version 4.0 (2025-11-12) - Komplett-Update</p>
 
 <div class='section'>
 <h3>💧 Wasser & Volumen</h3>
@@ -126,25 +173,6 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 <input id='ro' value='0' type='number' min='0' max='100' oninput='calc()'>
 </div>
 </div>
-<h4 style='font-size:0.9em;color:#94a3b8;margin:15px 0 8px 0;font-weight:700;text-transform:uppercase;letter-spacing:1px'>Leitungswasser - Makronährstoffe (mg/L)</h4>
-<div class='water-inputs'>
-<div class='water-input'><label>N</label><input id='n' value='0' type='number' step='0.1' oninput='calc()'></div>
-<div class='water-input'><label>P</label><input id='p' value='0' type='number' step='0.1' oninput='calc()'></div>
-<div class='water-input'><label>K</label><input id='k' value='0' type='number' step='0.1' oninput='calc()'></div>
-<div class='water-input'><label>Ca</label><input id='ca' value='0' type='number' step='0.1' oninput='calc()'></div>
-<div class='water-input'><label>Mg</label><input id='mg' value='0' type='number' step='0.1' oninput='calc()'></div>
-<div class='water-input'><label>S</label><input id='s' value='0' type='number' step='0.1' oninput='calc()'></div>
-</div>
-<h4 style='font-size:0.9em;color:#94a3b8;margin:15px 0 8px 0;font-weight:700;text-transform:uppercase;letter-spacing:1px'>Leitungswasser - Mikronährstoffe (mg/L)</h4>
-<div class='water-inputs'>
-<div class='water-input'><label>B</label><input id='w_b' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Cu</label><input id='w_cu' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Fe</label><input id='w_fe' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Mn</label><input id='w_mn' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Mo</label><input id='w_mo' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Zn</label><input id='w_zn' value='0' type='number' step='0.01' oninput='calc()'></div>
-<div class='water-input'><label>Si</label><input id='w_si' value='0' type='number' step='0.1' oninput='calc()'></div>
-</div>
 </div>
 
 <div class='section'>
@@ -155,7 +183,10 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
     <div id="autocomplete-list" class="autocomplete-list" style="display:none"></div>
 </div>
 <div id="fert-container"></div>
-<button class="add-btn" onclick="addFertRow()">➕ Dünger hinzufügen</button>
+<div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <button class="add-btn" onclick="addFertRow()">➕ Dünger hinzufügen</button>
+    <button class="reset-btn" onclick="resetAllFerts()">🔄 Alle Dünger zurücksetzen</button>
+</div>
 </div>
 
 <div class='section'>
@@ -163,7 +194,7 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 <div class='table-container'>
 <table>
 <thead>
-<tr><th>Dünger</th><th>Dosierung</th><th>N<br><small>mg/L</small></th><th>P<br><small>mg/L</small></th><th>K<br><small>mg/L</small></th><th>Ca<br><small>mg/L</small></th><th>Mg<br><small>mg/L</small></th><th>S<br><small>mg/L</small></th></tr>
+<tr><th>Dünger</th><th>Dosierung<br><small>ml/L oder g/L</small></th><th>N<br><small>mg/L</small></th><th>P<br><small>mg/L</small></th><th>K<br><small>mg/L</small></th><th>Ca<br><small>mg/L</small></th><th>Mg<br><small>mg/L</small></th><th>S<br><small>mg/L</small></th></tr>
 </thead>
 <tbody id='macro-body'></tbody>
 </table>
@@ -175,16 +206,123 @@ body.light .autocomplete-item:hover{background:rgba(139,92,246,0.1)}
 <div class='table-container'>
 <table>
 <thead>
-<tr><th>Dünger</th><th>Dosierung</th><th>B<br><small>mg/L</small></th><th>Cu<br><small>mg/L</small></th><th>Fe<br><small>mg/L</small></th><th>Mn<br><small>mg/L</small></th><th>Mo<br><small>mg/L</small></th><th>Zn<br><small>mg/L</small></th><th>Si<br><small>mg/L</small></th></tr>
+<tr><th>Dünger</th><th>Dosierung<br><small>ml/L oder g/L</small></th><th>B<br><small>mg/L</small></th><th>Cu<br><small>mg/L</small></th><th>Fe<br><small>mg/L</small></th><th>Mn<br><small>mg/L</small></th><th>Mo<br><small>mg/L</small></th><th>Zn<br><small>mg/L</small></th><th>Si<br><small>mg/L</small></th></tr>
 </thead>
 <tbody id='micro-body'></tbody>
 </table>
 </div>
 </div>
 
+<div class='section' id='dosierung-section' style='display:none'>
+<h3>🧪 Dosierungs-Zusammenfassung</h3>
+<div class='dosierung-summary'>
+    <div style='text-align:center;margin-bottom:15px;'>
+        <span style='font-weight:700;color:#06b6d4'>Für dein Volumen von </span>
+        <span id='summary-volume' style='font-weight:800;color:#8b5cf6'>10 Litern</span>
+    </div>
+    <div class='dosierung-list' id='dosierung-list'></div>
 </div>
+</div>
+
+</div>
+
+<!-- Wasserwerte Modal -->
+<div id="water-modal" class="modal">
+<div class="modal-content" style="max-width:500px">
+    <div class="modal-header">
+        <h3>💧 Leitungswasser - Nährstoffe</h3>
+        <button class="modal-close" onclick="closeModal('water-modal')">×</button>
+    </div>
+    <h4 style="margin-bottom:15px">Makronährstoffe (mg/L)</h4>
+    <div class="water-inputs">
+        <div class="water-input"><label>N</label><input id="water_n" type="number" step="0.1" value="0"></div>
+        <div class="water-input"><label>P</label><input id="water_p" type="number" step="0.1" value="0"></div>
+        <div class="water-input"><label>K</label><input id="water_k" type="number" step="0.1" value="0"></div>
+        <div class="water-input"><label>Ca</label><input id="water_ca" type="number" step="0.1" value="0"></div>
+        <div class="water-input"><label>Mg</label><input id="water_mg" type="number" step="0.1" value="0"></div>
+        <div class="water-input"><label>S</label><input id="water_s" type="number" step="0.1" value="0"></div>
+    </div>
+    <h4 style="margin:20px 0 15px 0">Mikronährstoffe (mg/L)</h4>
+    <div class="water-inputs">
+        <div class="water-input"><label>B</label><input id="water_b" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Cu</label><input id="water_cu" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Fe</label><input id="water_fe" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Mn</label><input id="water_mn" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Mo</label><input id="water_mo" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Zn</label><input id="water_zn" type="number" step="0.01" value="0"></div>
+        <div class="water-input"><label>Si</label><input id="water_si" type="number" step="0.1" value="0"></div>
+    </div>
+    <button class="add-btn" onclick="saveWaterValues()" style="width:100%;margin-top:20px">💾 Wasserwerte speichern</button>
+</div>
+</div>
+
+<!-- Dünger hinzufügen Modal -->
+<div id="add-fert-modal" class="modal">
+<div class="modal-content" style="max-width:600px">
+    <div class="modal-header">
+        <h3>➕ Eigenen Dünger erstellen</h3>
+        <button class="modal-close" onclick="closeModal('add-fert-modal')">×</button>
+    </div>
+    <div style="margin-bottom:20px">
+        <label style="display:block;margin-bottom:8px;font-weight:600">Dünger-Name</label>
+        <input type="text" id="new-fert-name" placeholder="z.B. Mein Eigen-Dünger" style="margin-bottom:15px">
+        
+        <label style="display:block;margin-bottom:8px;font-weight:600">Einheit</label>
+        <select id="new-fert-unit" style="margin-bottom:20px">
+            <option value="ml">ml (Flüssigdünger)</option>
+            <option value="g">g (Pulverdünger)</option>
+        </select>
+    </div>
+    
+    <h4 style="margin-bottom:15px">Makronährstoffe (in %)</h4>
+    <div class="nutrient-grid">
+        <div class="nutrient-input"><label>N (% N)</label><input id="new-fert-n" type="number" step="0.1" value="0"></div>
+        <div class="nutrient-input"><label>P (% P₂O₅)</label><input id="new-fert-p" type="number" step="0.1" value="0"></div>
+        <div class="nutrient-input"><label>K (% K₂O)</label><input id="new-fert-k" type="number" step="0.1" value="0"></div>
+        <div class="nutrient-input"><label>Ca (% CaO)</label><input id="new-fert-ca" type="number" step="0.1" value="0"></div>
+        <div class="nutrient-input"><label>Mg (% MgO)</label><input id="new-fert-mg" type="number" step="0.1" value="0"></div>
+        <div class="nutrient-input"><label>S (% S)</label><input id="new-fert-s" type="number" step="0.1" value="0"></div>
+    </div>
+    
+    <h4 style="margin:20px 0 15px 0">Mikronährstoffe (in %)</h4>
+    <div class="nutrient-grid">
+        <div class="nutrient-input"><label>B (% B)</label><input id="new-fert-b" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Cu (% Cu)</label><input id="new-fert-cu" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Fe (% Fe)</label><input id="new-fert-fe" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Mn (% Mn)</label><input id="new-fert-mn" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Mo (% Mo)</label><input id="new-fert-mo" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Zn (% Zn)</label><input id="new-fert-zn" type="number" step="0.01" value="0"></div>
+        <div class="nutrient-input"><label>Si (% Si)</label><input id="new-fert-si" type="number" step="0.1" value="0"></div>
+    </div>
+    
+    <button class="add-btn" onclick="saveNewFert()" style="width:100%;margin-top:20px">💾 Dünger speichern</button>
+</div>
+</div>
+
+<!-- Dünger löschen Modal -->
+<div id="delete-fert-modal" class="modal">
+<div class="modal-content" style="max-width:500px">
+    <div class="modal-header">
+        <h3>🗑️ Dünger löschen</h3>
+        <button class="modal-close" onclick="closeModal('delete-fert-modal')">×</button>
+    </div>
+    <p style="margin-bottom:20px;color:#94a3b8">Wähle die Dünger aus, die du löschen möchtest:</p>
+    <div id="delete-fert-list"></div>
+    <button class="reset-btn" onclick="deleteSelectedFerts()" style="width:100%;margin-top:20px">🗑️ Ausgewählte Dünger löschen</button>
+</div>
+</div>
+
 <script>
-const FERTS = [
+// Oxid-Umrechnungsfaktoren
+const OXID_FACTORS = {
+    p: 0.4364,  // P₂O₅ → P
+    k: 0.8301,  // K₂O → K
+    ca: 0.7147, // CaO → Ca
+    mg: 0.6030  // MgO → Mg
+};
+
+// Standard-Dünger
+const STANDARD_FERTS = [
   // Terra Aquatica (Flüssig - ml)
   {name:"Terra Aquatica Calcium/Magnesium",unit:"ml",n:25.0,p:0,k:0,ca:28.6,mg:6.0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
   {name:"Terra Aquatica FinalPart",unit:"ml",n:0,p:31.6,k:50.1,ca:0,mg:21.8,s:24.1,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0},
@@ -212,6 +350,205 @@ const FERTS = [
 
 let fertCounter = 0;
 let currentSearchTerm = '';
+let userFerts = [];
+let waterValues = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
+
+// Alle verfügbaren Dünger (Standard + Benutzer)
+function getAllFerts() {
+    return [...STANDARD_FERTS, ...userFerts];
+}
+
+// Options-Menü
+function toggleOptions() {
+    const menu = document.getElementById('options-menu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Modal-Funktionen
+function showWaterModal() {
+    closeAllModals();
+    loadWaterValues();
+    document.getElementById('water-modal').style.display = 'flex';
+}
+
+function showAddFertModal() {
+    closeAllModals();
+    document.getElementById('add-fert-modal').style.display = 'flex';
+}
+
+function showDeleteFertModal() {
+    closeAllModals();
+    loadDeleteFertList();
+    document.getElementById('delete-fert-modal').style.display = 'flex';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+    });
+    document.getElementById('options-menu').style.display = 'none';
+}
+
+// Klick außerhalb schließt Menüs
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.options-btn') && !e.target.closest('.options-menu')) {
+        document.getElementById('options-menu').style.display = 'none';
+    }
+    if (e.target.classList.contains('modal')) {
+        closeAllModals();
+    }
+});
+
+// Wasserwerte speichern
+function saveWaterValues() {
+    waterValues = {
+        n: parseFloat(document.getElementById('water_n').value) || 0,
+        p: parseFloat(document.getElementById('water_p').value) || 0,
+        k: parseFloat(document.getElementById('water_k').value) || 0,
+        ca: parseFloat(document.getElementById('water_ca').value) || 0,
+        mg: parseFloat(document.getElementById('water_mg').value) || 0,
+        s: parseFloat(document.getElementById('water_s').value) || 0,
+        b: parseFloat(document.getElementById('water_b').value) || 0,
+        cu: parseFloat(document.getElementById('water_cu').value) || 0,
+        fe: parseFloat(document.getElementById('water_fe').value) || 0,
+        mn: parseFloat(document.getElementById('water_mn').value) || 0,
+        mo: parseFloat(document.getElementById('water_mo').value) || 0,
+        zn: parseFloat(document.getElementById('water_zn').value) || 0,
+        si: parseFloat(document.getElementById('water_si').value) || 0
+    };
+    localStorage.setItem('waterValues', JSON.stringify(waterValues));
+    closeModal('water-modal');
+    calc();
+}
+
+// Wasserwerte laden
+function loadWaterValues() {
+    const saved = localStorage.getItem('waterValues');
+    if (saved) {
+        waterValues = JSON.parse(saved);
+        document.getElementById('water_n').value = waterValues.n;
+        document.getElementById('water_p').value = waterValues.p;
+        document.getElementById('water_k').value = waterValues.k;
+        document.getElementById('water_ca').value = waterValues.ca;
+        document.getElementById('water_mg').value = waterValues.mg;
+        document.getElementById('water_s').value = waterValues.s;
+        document.getElementById('water_b').value = waterValues.b;
+        document.getElementById('water_cu').value = waterValues.cu;
+        document.getElementById('water_fe').value = waterValues.fe;
+        document.getElementById('water_mn').value = waterValues.mn;
+        document.getElementById('water_mo').value = waterValues.mo;
+        document.getElementById('water_zn').value = waterValues.zn;
+        document.getElementById('water_si').value = waterValues.si;
+    }
+}
+
+// Neuen Dünger speichern
+function saveNewFert() {
+    const name = document.getElementById('new-fert-name').value.trim();
+    const unit = document.getElementById('new-fert-unit').value;
+    
+    if (!name) {
+        alert('Bitte einen Namen für den Dünger eingeben!');
+        return;
+    }
+    
+    // Prozent in mg/ml umrechnen mit Oxid-Faktoren
+    const newFert = {
+        name: name,
+        unit: unit,
+        n: (parseFloat(document.getElementById('new-fert-n').value) || 0) * 10, // % × 10 = mg/ml
+        p: (parseFloat(document.getElementById('new-fert-p').value) || 0) * 10 * OXID_FACTORS.p,
+        k: (parseFloat(document.getElementById('new-fert-k').value) || 0) * 10 * OXID_FACTORS.k,
+        ca: (parseFloat(document.getElementById('new-fert-ca').value) || 0) * 10 * OXID_FACTORS.ca,
+        mg: (parseFloat(document.getElementById('new-fert-mg').value) || 0) * 10 * OXID_FACTORS.mg,
+        s: (parseFloat(document.getElementById('new-fert-s').value) || 0) * 10,
+        b: (parseFloat(document.getElementById('new-fert-b').value) || 0) * 10,
+        cu: (parseFloat(document.getElementById('new-fert-cu').value) || 0) * 10,
+        fe: (parseFloat(document.getElementById('new-fert-fe').value) || 0) * 10,
+        mn: (parseFloat(document.getElementById('new-fert-mn').value) || 0) * 10,
+        mo: (parseFloat(document.getElementById('new-fert-mo').value) || 0) * 10,
+        zn: (parseFloat(document.getElementById('new-fert-zn').value) || 0) * 10,
+        si: (parseFloat(document.getElementById('new-fert-si').value) || 0) * 10
+    };
+    
+    userFerts.push(newFert);
+    localStorage.setItem('userFerts', JSON.stringify(userFerts));
+    
+    // Formular zurücksetzen
+    document.getElementById('new-fert-name').value = '';
+    document.querySelectorAll('#add-fert-modal input[type="number"]').forEach(input => {
+        input.value = '0';
+    });
+    
+    closeModal('add-fert-modal');
+    alert('Dünger erfolgreich gespeichert!');
+}
+
+// Dünger löschen Liste laden
+function loadDeleteFertList() {
+    const container = document.getElementById('delete-fert-list');
+    if (userFerts.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#64748b">Keine eigenen Dünger vorhanden</p>';
+        return;
+    }
+    
+    let html = '';
+    userFerts.forEach((fert, index) => {
+        html += `
+            <div class="fert-item">
+                <span class="fert-item-name">${fert.name}</span>
+                <input type="checkbox" id="delete-fert-${index}" value="${index}">
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// Ausgewählte Dünger löschen
+function deleteSelectedFerts() {
+    const indicesToDelete = [];
+    userFerts.forEach((fert, index) => {
+        const checkbox = document.getElementById(`delete-fert-${index}`);
+        if (checkbox && checkbox.checked) {
+            indicesToDelete.push(index);
+        }
+    });
+    
+    if (indicesToDelete.length === 0) {
+        alert('Bitte wähle Dünger aus, die gelöscht werden sollen!');
+        return;
+    }
+    
+    // Von hinten nach vorne löschen um Indizes beizubehalten
+    indicesToDelete.sort((a, b) => b - a).forEach(index => {
+        userFerts.splice(index, 1);
+    });
+    
+    localStorage.setItem('userFerts', JSON.stringify(userFerts));
+    closeModal('delete-fert-modal');
+    alert('Dünger erfolgreich gelöscht!');
+}
+
+// Benutzer-Dünger laden
+function loadUserFerts() {
+    const saved = localStorage.getItem('userFerts');
+    if (saved) {
+        userFerts = JSON.parse(saved);
+    }
+}
+
+// Reset aller Dünger
+function resetAllFerts() {
+    const container = document.getElementById('fert-container');
+    container.innerHTML = '';
+    fertCounter = 0;
+    addFertRow();
+    calc();
+}
 
 // Suchfunktion
 function filterFerts() {
@@ -224,8 +561,8 @@ function filterFerts() {
         return;
     }
     
-    // Filtere Dünger die den Suchbegriff enthalten
-    const filteredFerts = FERTS.filter(fert => 
+    const allFerts = getAllFerts();
+    const filteredFerts = allFerts.filter(fert => 
         fert.name.toLowerCase().includes(searchTerm)
     );
     
@@ -235,7 +572,6 @@ function filterFerts() {
         return;
     }
     
-    // Erstelle Autocomplete-Liste mit Highlighting
     let html = '';
     filteredFerts.forEach((fert, index) => {
         const name = fert.name;
@@ -248,12 +584,12 @@ function filterFerts() {
             const after = name.substring(startIndex + searchTerm.length);
             
             html += `
-                <div class="autocomplete-item" onclick="selectFert(${FERTS.indexOf(fert)})" onmouseover="this.style.background='rgba(139,92,246,0.2)'" onmouseout="this.style.background=''">
+                <div class="autocomplete-item" onclick="selectFert(${index})" onmouseover="this.style.background='rgba(139,92,246,0.2)'" onmouseout="this.style.background=''">
                     ${before}<span class="autocomplete-highlight">${match}</span>${after}
                 </div>
             `;
         } else {
-            html += `<div class="autocomplete-item" onclick="selectFert(${FERTS.indexOf(fert)})">${name}</div>`;
+            html += `<div class="autocomplete-item" onclick="selectFert(${index})">${name}</div>`;
         }
     });
     
@@ -271,21 +607,24 @@ function selectFert(fertIndex) {
 
 // Neue Zeile mit vorgewähltem Dünger hinzufügen
 function addFertRowWithSelection(fertIndex) {
+    const allFerts = getAllFerts();
+    if (fertIndex >= allFerts.length) return;
+    
     const container = document.getElementById('fert-container');
     const row = document.createElement('div');
     row.className = 'fert-row';
     row.id = 'fert-row-' + fertCounter;
 
     let options = '<option value="">--Dünger wählen--</option>';
-    FERTS.forEach((f,i) => {
+    allFerts.forEach((f,i) => {
         const selected = i === fertIndex ? 'selected' : '';
         options += `<option value="${i}" ${selected}>${f.name}</option>`;
     });
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="0" oninput="calc()">
-        <span class="unit">${FERTS[fertIndex].unit}</span>
+        <input type="number" step="0.01" value="1.0" oninput="calc()">
+        <span class="unit">${allFerts[fertIndex].unit}/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
 
@@ -301,28 +640,22 @@ function clearSearch() {
     currentSearchTerm = '';
 }
 
-// Klick außerhalb schließt Autocomplete
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('.search-container')) {
-        document.getElementById('autocomplete-list').style.display = 'none';
-    }
-});
-
 function addFertRow() {
     const container = document.getElementById('fert-container');
     const row = document.createElement('div');
     row.className = 'fert-row';
     row.id = 'fert-row-' + fertCounter;
 
+    const allFerts = getAllFerts();
     let options = '<option value="">--Dünger wählen--</option>';
-    FERTS.forEach((f,i) => {
+    allFerts.forEach((f,i) => {
         options += `<option value="${i}">${f.name}</option>`;
     });
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="0" oninput="calc()">
-        <span class="unit">ml</span>
+        <input type="number" step="0.01" value="1.0" oninput="calc()">
+        <span class="unit">ml/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
 
@@ -336,11 +669,12 @@ function updateUnit(selectElement) {
     const row = selectElement.closest('.fert-row');
     const unitSpan = row.querySelector('.unit');
     const selectedIndex = parseInt(selectElement.value);
+    const allFerts = getAllFerts();
     
-    if (!isNaN(selectedIndex) && selectedIndex >= 0) {
-        unitSpan.textContent = FERTS[selectedIndex].unit;
+    if (!isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < allFerts.length) {
+        unitSpan.textContent = allFerts[selectedIndex].unit + '/L';
     } else {
-        unitSpan.textContent = 'ml';
+        unitSpan.textContent = 'ml/L';
     }
     calc();
 }
@@ -355,49 +689,60 @@ function removeFertRow(id) {
 
 function calc() {
     const vol = parseFloat(document.getElementById('vol').value) || 0;
+    const volElement = document.getElementById('vol');
+    
     if(vol <= 0) {
         document.getElementById('macro-body').innerHTML = '<tr><td colspan="8" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
         document.getElementById('micro-body').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#ef4444">Bitte Volumen eingeben!</td></tr>';
+        document.getElementById('dosierung-section').style.display = 'none';
+        volElement.style.borderColor = '#ef4444';
         return;
+    } else {
+        volElement.style.borderColor = '';
     }
 
     const ro = parseFloat(document.getElementById('ro').value) || 0;
     const tap = 100 - ro;
 
-    const w = {
-        n: (parseFloat(document.getElementById('n').value) || 0) * tap / 100,
-        p: (parseFloat(document.getElementById('p').value) || 0) * tap / 100,
-        k: (parseFloat(document.getElementById('k').value) || 0) * tap / 100,
-        ca: (parseFloat(document.getElementById('ca').value) || 0) * tap / 100,
-        mg: (parseFloat(document.getElementById('mg').value) || 0) * tap / 100,
-        s: (parseFloat(document.getElementById('s').value) || 0) * tap / 100,
-        b: (parseFloat(document.getElementById('w_b').value) || 0) * tap / 100,
-        cu: (parseFloat(document.getElementById('w_cu').value) || 0) * tap / 100,
-        fe: (parseFloat(document.getElementById('w_fe').value) || 0) * tap / 100,
-        mn: (parseFloat(document.getElementById('w_mn').value) || 0) * tap / 100,
-        mo: (parseFloat(document.getElementById('w_mo').value) || 0) * tap / 100,
-        zn: (parseFloat(document.getElementById('w_zn').value) || 0) * tap / 100,
-        si: (parseFloat(document.getElementById('w_si').value) || 0) * tap / 100
-    };
-
     const fertRows = document.querySelectorAll('.fert-row');
     const used = [];
+    const dosierungList = [];
+    const allFerts = getAllFerts();
+    
     fertRows.forEach(row => {
         const select = row.querySelector('select');
         const input = row.querySelector('input');
         const idx = parseInt(select.value);
-        const dose = parseFloat(input.value) || 0;
-        if(!isNaN(idx) && dose > 0) {
-            const f = FERTS[idx];
+        const dosePerLiter = parseFloat(input.value) || 0;
+        
+        if(!isNaN(idx) && dosePerLiter > 0 && idx < allFerts.length) {
+            const f = allFerts[idx];
+            const totalDose = dosePerLiter * vol;
+            
             used.push({
                 name: f.name,
-                dose: dose,
+                dose: dosePerLiter,
+                totalDose: totalDose,
                 unit: f.unit,
-                n: dose*f.n/vol, p: dose*f.p/vol, k: dose*f.k/vol,
-                ca: dose*f.ca/vol, mg: dose*f.mg/vol, s: dose*f.s/vol,
-                b: dose*f.b/vol, cu: dose*f.cu/vol, fe: dose*f.fe/vol,
-                mn: dose*f.mn/vol, mo: dose*f.mo/vol, zn: dose*f.zn/vol,
-                si: dose*f.si/vol
+                n: dosePerLiter * f.n, 
+                p: dosePerLiter * f.p, 
+                k: dosePerLiter * f.k,
+                ca: dosePerLiter * f.ca, 
+                mg: dosePerLiter * f.mg, 
+                s: dosePerLiter * f.s,
+                b: dosePerLiter * f.b, 
+                cu: dosePerLiter * f.cu, 
+                fe: dosePerLiter * f.fe,
+                mn: dosePerLiter * f.mn, 
+                mo: dosePerLiter * f.mo, 
+                zn: dosePerLiter * f.zn,
+                si: dosePerLiter * f.si
+            });
+            
+            dosierungList.push({
+                name: f.name,
+                totalDose: totalDose,
+                unit: f.unit
             });
         }
     });
@@ -411,8 +756,26 @@ function calc() {
 
     saveInputs();
 
+    // Wasserwerte mit Osmose-Anteil berechnen
+    const w = {
+        n: waterValues.n * tap / 100,
+        p: waterValues.p * tap / 100,
+        k: waterValues.k * tap / 100,
+        ca: waterValues.ca * tap / 100,
+        mg: waterValues.mg * tap / 100,
+        s: waterValues.s * tap / 100,
+        b: waterValues.b * tap / 100,
+        cu: waterValues.cu * tap / 100,
+        fe: waterValues.fe * tap / 100,
+        mn: waterValues.mn * tap / 100,
+        mo: waterValues.mo * tap / 100,
+        zn: waterValues.zn * tap / 100,
+        si: waterValues.si * tap / 100
+    };
+
+    // Makro-Tabelle
     let macroHTML = '';
-    if(tap>0){
+    if(tap>0 && (w.n>0||w.p>0||w.k>0||w.ca>0||w.mg>0||w.s>0)){
         macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
             <td><span class="nutrient-value">${w.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -422,7 +785,7 @@ function calc() {
             <td><span class="nutrient-value">${w.s.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     }
     used.forEach(u=>{
-        macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
+        macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}/L</td>
             <td><span class="nutrient-value">${u.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${u.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${u.k.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -439,6 +802,7 @@ function calc() {
         <td><span class="nutrient-value">${(w.s+sum.s).toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     document.getElementById('macro-body').innerHTML = macroHTML;
 
+    // Mikro-Tabelle
     let microHTML = '';
     if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
         microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
@@ -452,7 +816,7 @@ function calc() {
     }
     used.forEach(u=>{
         if(u.b>0||u.cu>0||u.fe>0||u.mn>0||u.mo>0||u.zn>0||u.si>0){
-            microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}</td>
+            microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}/L</td>
                 <td><span class="nutrient-value">${u.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
                 <td><span class="nutrient-value">${u.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
                 <td><span class="nutrient-value">${u.fe.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -475,6 +839,25 @@ function calc() {
         microHTML = '<tr><td colspan="9" style="text-align:center;color:#888">Keine Mikronährstoffe vorhanden</td></tr>';
     }
     document.getElementById('micro-body').innerHTML = microHTML;
+
+    // Dosierungs-Zusammenfassung
+    if(dosierungList.length > 0) {
+        document.getElementById('dosierung-section').style.display = 'block';
+        document.getElementById('summary-volume').textContent = vol + ' Liter';
+        
+        let dosierungHTML = '';
+        dosierungList.forEach(item => {
+            dosierungHTML += `
+                <div class="dosierung-item">
+                    <span class="dosierung-name">${item.name}</span>
+                    <span class="dosierung-menge">${item.totalDose.toFixed(1)} ${item.unit}</span>
+                </div>
+            `;
+        });
+        document.getElementById('dosierung-list').innerHTML = dosierungHTML;
+    } else {
+        document.getElementById('dosierung-section').style.display = 'none';
+    }
 }
 
 // Theme Toggle
@@ -498,7 +881,7 @@ function toggleTheme() {
 
 // Local Storage für Eingaben
 function saveInputs() {
-    const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
+    const inputs = ['vol', 'ro'];
     inputs.forEach(id => {
         const value = document.getElementById(id).value;
         localStorage.setItem(id, value);
@@ -506,7 +889,7 @@ function saveInputs() {
 }
 
 function loadInputs() {
-    const inputs = ['vol', 'ro', 'n', 'p', 'k', 'ca', 'mg', 's', 'w_b', 'w_cu', 'w_fe', 'w_mn', 'w_mo', 'w_zn', 'w_si'];
+    const inputs = ['vol', 'ro'];
     inputs.forEach(id => {
         const saved = localStorage.getItem(id);
         if(saved !== null) document.getElementById(id).value = saved;
@@ -523,6 +906,8 @@ window.onload = function() {
     }
     
     loadInputs();
+    loadUserFerts();
+    loadWaterValues();
     addFertRow();
     calc();
 };
