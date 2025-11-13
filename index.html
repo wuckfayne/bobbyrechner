@@ -416,6 +416,79 @@ function getAllFerts() {
     return [...ALL_FERTS, ...userFerts];
 }
 
+// === DÜNGER-AUSWAHL SPEICHERN & LADEN ===
+function saveFertRows() {
+    const fertRows = document.querySelectorAll('.fert-row');
+    const savedRows = [];
+    
+    fertRows.forEach(row => {
+        const select = row.querySelector('select');
+        const input = row.querySelector('input');
+        const unitSpan = row.querySelector('.unit');
+        
+        savedRows.push({
+            fertIndex: select.value,
+            dose: input.value,
+            unit: unitSpan.textContent.replace('/L', '')
+        });
+    });
+    
+    localStorage.setItem('savedFertRows', JSON.stringify(savedRows));
+}
+
+function loadFertRows() {
+    const saved = localStorage.getItem('savedFertRows');
+    if (!saved) {
+        // Keine gespeicherten Daten → Standard-Zeile hinzufügen
+        addFertRow();
+        return;
+    }
+    
+    try {
+        const savedRows = JSON.parse(saved);
+        const container = document.getElementById('fert-container');
+        container.innerHTML = '';
+        fertCounter = 0;
+        
+        savedRows.forEach(rowData => {
+            const row = document.createElement('div');
+            row.className = 'fert-row';
+            row.id = 'fert-row-' + fertCounter;
+
+            const allFerts = getAllFerts();
+            let options = '<option value="">--Dünger wählen--</option>';
+            allFerts.forEach((f, i) => {
+                const selected = i.toString() === rowData.fertIndex ? 'selected' : '';
+                options += `<option value="${i}" ${selected}>${f.name}</option>`;
+            });
+
+            row.innerHTML = `
+                <select onchange="updateUnit(this)">${options}</select>
+                <input type="number" step="0.01" value="${rowData.dose}" min="0" oninput="calc()">
+                <span class="unit">${rowData.unit}/L</span>
+                <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
+            `;
+
+            container.appendChild(row);
+            fertCounter++;
+        });
+        
+        // Immer mindestens eine Zeile anzeigen
+        if (savedRows.length === 0) {
+            addFertRow();
+        }
+        
+    } catch (error) {
+        console.error('Fehler beim Laden der Dünger-Zeilen:', error);
+        addFertRow();
+    }
+}
+
+function updateFertStorage() {
+    saveFertRows();
+    calc();
+}
+
 // === FEHLER-FUNKTIONEN ===
 function showError(message) {
     document.querySelectorAll('.error-message').forEach(el => el.remove());
@@ -592,6 +665,7 @@ function saveNewFert() {
     });
     
     closeModal('add-fert-modal');
+    updateFertStorage(); // Aktualisiere die Auswahl
     alert('Dünger erfolgreich gespeichert!');
 }
 
@@ -634,6 +708,7 @@ function deleteSelectedFerts() {
     
     localStorage.setItem('userFerts', JSON.stringify(userFerts));
     closeModal('delete-fert-modal');
+    updateFertStorage(); // Aktualisiere die Auswahl
     alert('Dünger erfolgreich gelöscht!');
 }
 
@@ -649,6 +724,7 @@ function resetAllFerts() {
     container.innerHTML = '';
     fertCounter = 0;
     addFertRow();
+    localStorage.removeItem('savedFertRows'); // Lösche gespeicherte Dünger-Auswahl
     calc();
 }
 
@@ -726,14 +802,14 @@ function addFertRowWithSelection(fertIndex) {
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="1.0" min="0" oninput="calc()">
+        <input type="number" step="0.01" value="1.0" min="0" oninput="updateFertStorage()">
         <span class="unit">${allFerts[fertIndex].unit}/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
 
     container.appendChild(row);
     fertCounter++;
-    calc();
+    updateFertStorage();
 }
 
 function clearSearch() {
@@ -756,14 +832,14 @@ function addFertRow() {
 
     row.innerHTML = `
         <select onchange="updateUnit(this)">${options}</select>
-        <input type="number" step="0.01" value="1.0" min="0" oninput="calc()">
+        <input type="number" step="0.01" value="1.0" min="0" oninput="updateFertStorage()">
         <span class="unit">ml/L</span>
         <button onclick="removeFertRow('${row.id}')" class="delete-btn" title="Dünger entfernen">✕</button>
     `;
 
     container.appendChild(row);
     fertCounter++;
-    calc();
+    updateFertStorage();
 }
 
 function updateUnit(selectElement) {
@@ -777,14 +853,14 @@ function updateUnit(selectElement) {
     } else {
         unitSpan.textContent = 'ml/L';
     }
-    calc();
+    updateFertStorage();
 }
 
 function removeFertRow(id) {
     const row = document.getElementById(id);
     if(row) {
         row.remove();
-        calc();
+        updateFertStorage();
     }
 }
 
@@ -1003,6 +1079,7 @@ window.onload = async function() {
         const keepTheme = localStorage.getItem('theme');
         const keepVol = localStorage.getItem('vol');
         const keepRo = localStorage.getItem('ro');
+        const keepFertRows = localStorage.getItem('savedFertRows');
         
         localStorage.clear(); // Alles löschen
         
@@ -1012,6 +1089,7 @@ window.onload = async function() {
         if (keepTheme) localStorage.setItem('theme', keepTheme);
         if (keepVol) localStorage.setItem('vol', keepVol);
         if (keepRo) localStorage.setItem('ro', keepRo);
+        if (keepFertRows) localStorage.setItem('savedFertRows', keepFertRows);
         localStorage.setItem('appVersion', currentVersion);
     }
     
@@ -1027,7 +1105,7 @@ window.onload = async function() {
     loadInputs();
     loadUserFerts();
     loadWaterValues();
-    addFertRow();
+    loadFertRows(); // Gespeicherte Dünger-Auswahl laden
     calc();
     
     document.querySelectorAll('input[type="number"]').forEach(input => {
