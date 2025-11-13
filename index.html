@@ -43,6 +43,9 @@ body.light tr:hover td{background:rgba(139,92,246,0.05)}
 td:first-child{text-align:left;font-weight:600}
 body.dark td:first-child{color:#8b5cf6}
 body.light td:first-child{color:#7c3aed}
+/* NEUE FARBE FÜR LEITUNGSWASSER */
+.water-row td:first-child{color:#06b6d4 !important}
+body.light .water-row td:first-child{color:#0ea5e9 !important}
 .nutrient-value{font-weight:600;font-size:0.95em}
 .nutrient-unit{font-size:0.7em;color:#64748b;margin-left:2px;text-transform:none}
 input,select,textarea{padding:10px 12px;border-radius:10px;font-size:0.95em;width:100%;transition:all 0.3s;font-weight:500}
@@ -375,6 +378,7 @@ let userFerts = [];
 let waterValues = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
 let searchTimeout;
 let ALL_FERTS = []; // Wird von CSV geladen
+let filteredFerts = []; // Für Suchfunktion
 
 // === CSV LADEN ===
 async function loadAllFertsFromCSV() {
@@ -736,13 +740,14 @@ function filterFerts() {
     
     if (searchTerm.length === 0) {
         autocompleteList.style.display = 'none';
+        filteredFerts = [];
         return;
     }
     
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         const allFerts = getAllFerts();
-        const filteredFerts = allFerts.filter(fert => 
+        filteredFerts = allFerts.filter(fert => 
             fert.name.toLowerCase().includes(searchTerm)
         );
         
@@ -778,11 +783,24 @@ function filterFerts() {
     }, 300);
 }
 
+// KORRIGIERT: Suchfunktion verwendet jetzt filteredFerts
 function selectFert(fertIndex) {
-    addFertRowWithSelection(fertIndex);
+    if (fertIndex >= 0 && fertIndex < filteredFerts.length) {
+        const selectedFert = filteredFerts[fertIndex];
+        const allFerts = getAllFerts();
+        
+        // Finde den Index des ausgewählten Düngers in der Gesamtliste
+        const globalIndex = allFerts.findIndex(fert => fert.name === selectedFert.name);
+        
+        if (globalIndex !== -1) {
+            addFertRowWithSelection(globalIndex);
+        }
+    }
+    
     document.getElementById('fert-search').value = '';
     document.getElementById('autocomplete-list').style.display = 'none';
     currentSearchTerm = '';
+    filteredFerts = [];
 }
 
 function addFertRowWithSelection(fertIndex) {
@@ -816,6 +834,7 @@ function clearSearch() {
     document.getElementById('fert-search').value = '';
     document.getElementById('autocomplete-list').style.display = 'none';
     currentSearchTerm = '';
+    filteredFerts = [];
 }
 
 function addFertRow() {
@@ -949,7 +968,8 @@ function calc() {
 
     let macroHTML = '';
     if(tap>0 && (w.n>0||w.p>0||w.k>0||w.ca>0||w.mg>0||w.s>0)){
-        macroHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
+        // NEUE FARBE FÜR LEITUNGSWASSER - Wasser-Row Klasse hinzugefügt
+        macroHTML += `<tr class="water-row"><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
             <td><span class="nutrient-value">${w.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.k.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -977,7 +997,8 @@ function calc() {
 
     let microHTML = '';
     if(tap>0 && (w.b>0||w.cu>0||w.fe>0||w.mn>0||w.mo>0||w.zn>0||w.si>0)){
-        microHTML += `<tr><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
+        // NEUE FARBE FÜR LEITUNGSWASSER - Wasser-Row Klasse hinzugefügt
+        microHTML += `<tr class="water-row"><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
             <td><span class="nutrient-value">${w.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.fe.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
