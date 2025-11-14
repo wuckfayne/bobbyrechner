@@ -144,10 +144,114 @@ body.light .autocomplete-item{border-bottom:1px solid rgba(0,0,0,0.08)}
 .instagram-link:hover{transform:translateY(-3px);color:#fff}
 body.light .instagram-link{box-shadow:0 4px 20px rgba(139,92,246,0.3)}
 .dosierung-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:15px}
+.pdf-title-input{background:rgba(255,255,255,0.1);border:2px solid rgba(139,92,246,0.3);color:inherit;padding:12px 16px;border-radius:10px;font-size:1em;width:250px;text-align:center}
+body.dark .pdf-title-input{background:rgba(15,23,42,0.8)}
+body.light .pdf-title-input{background:rgba(255,255,255,0.9)}
+.pdf-title-input:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
 @media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.nutrient-grid{grid-template-columns:1fr}}
-@media(max-width:640px){h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}.instagram-link{bottom:15px;right:15px;padding:10px 14px;font-size:0.8em}.nutrient-overview{grid-template-columns:1fr}.settings-bar{flex-direction:column;align-items:stretch}.settings-item{justify-content:space-between}.dosierung-header{flex-direction:column;align-items:stretch}}
+@media(max-width:640px){h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}.instagram-link{bottom:15px;right:15px;padding:10px 14px;font-size:0.8em}.nutrient-overview{grid-template-columns:1fr}.settings-bar{flex-direction:column;align-items:stretch}.settings-item{justify-content:space-between}.dosierung-header{flex-direction:column;align-items:stretch}.pdf-title-input{width:100%}}
+
+/* DRUCK-STYLES */
+@media print {
+    @page {
+        margin: 1cm;
+        size: A4;
+    }
+    
+    body * {
+        visibility: hidden;
+    }
+    
+    #print-layout,
+    #print-layout * {
+        visibility: visible;
+    }
+    
+    #print-layout {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white !important;
+        color: black !important;
+    }
+    
+    .print-section {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #333 !important;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 5px;
+        page-break-inside: avoid;
+    }
+    
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+        font-size: 10px;
+    }
+    
+    .print-table th,
+    .print-table td {
+        border: 1px solid #333;
+        padding: 6px;
+        text-align: center;
+        background: white !important;
+        color: black !important;
+    }
+    
+    .print-table th {
+        background: #f0f0f0 !important;
+        font-weight: bold;
+    }
+    
+    .print-header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #333;
+    }
+    
+    .print-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2c5aa0 !important;
+        margin-bottom: 5px;
+    }
+    
+    .print-subtitle {
+        font-size: 14px;
+        color: #666 !important;
+    }
+    
+    .print-water-row {
+        background: #e8f4f8 !important;
+    }
+    
+    .print-result-row {
+        background: #f0f8f0 !important;
+        font-weight: bold;
+    }
+    
+    .print-verdunnung {
+        background: #fff8e1 !important;
+        border-left: 4px solid #ffa000;
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+}
 </style>
 </head>
 <body class="dark">
@@ -218,7 +322,10 @@ body.light .instagram-link{box-shadow:0 4px 20px rgba(139,92,246,0.3)}
             <input type="number" id="vol" value="10" step="0.1" min="0" oninput="calc()" class="settings-input">
             <span class="settings-label">Liter</span>
         </div>
-        <button class="pdf-btn" onclick="generatePDF()">📄 PDF Export</button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" id="pdf-title" class="pdf-title-input" placeholder="PDF Titel (z.B. Blütephase)" value="Nährstoffanalyse">
+            <button class="pdf-btn" onclick="generatePDF()">📄 PDF Export</button>
+        </div>
     </div>
     
     <div id="verdunnung-tool" class="verdunnung-tool" style="display:none">
@@ -245,6 +352,44 @@ body.light .instagram-link{box-shadow:0 4px 20px rgba(139,92,246,0.3)}
 </div>
 </div>
 
+</div>
+
+<!-- VERSTECKTES DRUCK-LAYOUT -->
+<div id="print-layout" style="display: none;">
+    <div class="print-header">
+        <div class="print-title" id="print-title">Nährstoffanalyse</div>
+        <div class="print-subtitle" id="print-subtitle">🌱 Bobby's Düngerrechner</div>
+        <div style="font-size: 12px; color: #666; margin-top: 5px;" id="print-date"></div>
+    </div>
+
+    <div class="print-section">
+        <h4>⚙️ Berechnungseinstellungen</h4>
+        <div id="print-settings"></div>
+    </div>
+
+    <div class="print-section">
+        <h4>📊 Makronährstoffe (mg/L)</h4>
+        <table class="print-table" id="print-macro-table"></table>
+    </div>
+
+    <div class="print-section">
+        <h4>🔬 Mikronährstoffe (mg/L)</h4>
+        <table class="print-table" id="print-micro-table"></table>
+    </div>
+
+    <div class="print-section" id="print-verdunnung-section" style="display: none;">
+        <h4>🧪 Verdünnungstool</h4>
+        <div id="print-verdunnung-content"></div>
+    </div>
+
+    <div class="print-section">
+        <h4>🧪 Dosierungs-Zusammenfassung</h4>
+        <div id="print-dosierung-list"></div>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px; font-size: 10px; color: #999; border-top: 1px solid #ccc; padding-top: 10px;">
+        Erstellt mit Bobby's Düngerrechner | 🌱 @thebobbygrow
+    </div>
 </div>
 
 <a href="https://www.instagram.com/thebobbygrow/" target="_blank" class="instagram-link">📷 @thebobbygrow</a>
@@ -333,12 +478,6 @@ body.light .instagram-link{box-shadow:0 4px 20px rgba(139,92,246,0.3)}
 </div>
 
 <script>
-// PDF.js Bibliothek einbinden
-const script = document.createElement('script');
-script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-script.onload = () => console.log('PDF.js geladen');
-document.head.appendChild(script);
-
 // Oxid-Umrechnungsfaktoren
 const OXID_FACTORS = {
     p: 0.4364, k: 0.8301, ca: 0.7147, mg: 0.6030
@@ -355,198 +494,185 @@ let ALL_FERTS = [];
 let filteredFerts = [];
 let currentNutrientTotals = {};
 
-// PDF Export Funktion
+// PDF EXPORT FUNKTION
 function generatePDF() {
-    if (typeof jsPDF === 'undefined') {
-        showNotification('❌ PDF-Bibliothek wird noch geladen... Bitte versuche es in ein paar Sekunden erneut.', 'error');
-        return;
-    }
+    const pdfTitle = document.getElementById('pdf-title').value.trim() || 'Nährstoffanalyse';
+    
+    // Druck-Layout vorbereiten
+    preparePrintLayout(pdfTitle);
+    
+    // Kurze Verzögerung damit das Layout geladen wird
+    setTimeout(() => {
+        window.print();
+        showNotification('📄 PDF-Dialog geöffnet - Wähle "Als PDF speichern"', 'info');
+    }, 500);
+}
 
-    showNotification('📄 PDF wird generiert...', 'info');
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // PDF Inhalt
+function preparePrintLayout(pdfTitle) {
     const date = new Date().toLocaleString('de-DE');
     const vol = document.getElementById('vol').value || '10';
     const ro = document.getElementById('ro').value || '0';
     const tap = 100 - parseInt(ro);
     
-    // Header
-    doc.setFillColor(139, 92, 246);
-    doc.rect(0, 0, 210, 40, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text('🌱 Bobby\'s Düngerrechner', 105, 15, { align: 'center' });
-    doc.setFontSize(12);
-    doc.text('Nährstoffanalyse Report', 105, 25, { align: 'center' });
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(8);
-    doc.text(`Erstellt am: ${date}`, 105, 35, { align: 'center' });
+    // Titel und Datum setzen
+    document.getElementById('print-title').textContent = pdfTitle;
+    document.getElementById('print-date').textContent = `Erstellt am: ${date}`;
     
     // Einstellungen
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    let yPos = 50;
-    doc.setFillColor(240, 240, 240);
-    doc.rect(10, yPos, 190, 15, 'F');
-    doc.text(`⚙️ Berechnungseinstellungen: ${vol} Liter | Osmose: ${ro}% | Leitungswasser: ${tap}%`, 15, yPos + 10);
+    document.getElementById('print-settings').innerHTML = `
+        <div>Volumen: <strong>${vol} Liter</strong></div>
+        <div>Osmose-Wasser: <strong>${ro}%</strong></div>
+        <div>Leitungswasser: <strong>${tap}%</strong></div>
+    `;
     
-    // Makronährstoffe Tabelle
-    yPos += 25;
-    doc.setFontSize(12);
-    doc.setTextColor(139, 92, 246);
-    doc.text('📊 Makronährstoffe (mg/L)', 15, yPos);
-    
+    // Makro-Tabelle
     const macroTable = document.getElementById('macro-body');
-    if (macroTable) {
-        yPos += 10;
-        let rows = macroTable.querySelectorAll('tr');
-        const headers = ['Dünger', 'Dosierung', 'N', 'P', 'K', 'Ca', 'Mg', 'S'];
+    const printMacroTable = document.getElementById('print-macro-table');
+    if (macroTable && macroTable.children.length > 0) {
+        let html = `
+            <thead>
+                <tr>
+                    <th>Dünger</th>
+                    <th>Dosierung</th>
+                    <th>N</th>
+                    <th>P</th>
+                    <th>K</th>
+                    <th>Ca</th>
+                    <th>Mg</th>
+                    <th>S</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
         
-        // Tabellen-Header
-        doc.setFontSize(8);
-        doc.setTextColor(255, 255, 255);
-        doc.setFillColor(100, 100, 150);
-        doc.rect(10, yPos, 190, 8, 'F');
-        let xPos = 12;
-        headers.forEach((header, index) => {
-            const width = index === 0 ? 60 : 18;
-            doc.text(header, xPos, yPos + 6);
-            xPos += width;
-        });
-        
-        // Tabellen-Inhalt
-        yPos += 8;
-        doc.setTextColor(0, 0, 0);
-        rows.forEach((row, rowIndex) => {
-            if (yPos > 270) {
-                doc.addPage();
-                yPos = 20;
+        Array.from(macroTable.children).forEach(row => {
+            const cells = row.querySelectorAll('td');
+            let rowHtml = '<tr';
+            
+            if (row.classList.contains('water-row')) {
+                rowHtml += ' class="print-water-row"';
+            } else if (row.classList.contains('result-row')) {
+                rowHtml += ' class="print-result-row"';
             }
             
-            const cells = row.querySelectorAll('td');
-            const isWaterRow = row.classList.contains('water-row');
-            const isResultRow = row.classList.contains('result-row');
-            
-            if (isWaterRow) doc.setFillColor(200, 230, 255);
-            else if (isResultRow) doc.setFillColor(200, 255, 200);
-            else doc.setFillColor(255, 255, 255);
-            
-            doc.rect(10, yPos, 190, 8, 'F');
-            
-            xPos = 12;
-            cells.forEach((cell, cellIndex) => {
-                const width = cellIndex === 0 ? 60 : 18;
+            rowHtml += '>';
+            cells.forEach((cell, index) => {
                 const text = cell.textContent.trim();
-                doc.text(text, xPos, yPos + 6);
-                xPos += width;
+                if (index === 0) {
+                    rowHtml += `<td style="text-align: left; font-weight: 600;">${text}</td>`;
+                } else {
+                    rowHtml += `<td>${text}</td>`;
+                }
             });
-            
-            yPos += 8;
+            rowHtml += '</tr>';
+            html += rowHtml;
         });
+        
+        html += '</tbody>';
+        printMacroTable.innerHTML = html;
     }
     
-    // Mikronährstoffe Tabelle
-    yPos += 15;
-    if (yPos > 250) {
-        doc.addPage();
-        yPos = 20;
-    }
-    
-    doc.setFontSize(12);
-    doc.setTextColor(139, 92, 246);
-    doc.text('🔬 Mikronährstoffe (mg/L)', 15, yPos);
-    
+    // Mikro-Tabelle
     const microTable = document.getElementById('micro-body');
-    if (microTable) {
-        yPos += 10;
-        let rows = microTable.querySelectorAll('tr');
-        const headers = ['Dünger', 'Dosierung', 'B', 'Cu', 'Fe', 'Mn', 'Mo', 'Zn', 'Si'];
+    const printMicroTable = document.getElementById('print-micro-table');
+    if (microTable && microTable.children.length > 0) {
+        let html = `
+            <thead>
+                <tr>
+                    <th>Dünger</th>
+                    <th>Dosierung</th>
+                    <th>B</th>
+                    <th>Cu</th>
+                    <th>Fe</th>
+                    <th>Mn</th>
+                    <th>Mo</th>
+                    <th>Zn</th>
+                    <th>Si</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
         
-        // Tabellen-Header
-        doc.setFontSize(8);
-        doc.setTextColor(255, 255, 255);
-        doc.setFillColor(100, 100, 150);
-        doc.rect(10, yPos, 190, 8, 'F');
-        let xPos = 12;
-        headers.forEach((header, index) => {
-            const width = index === 0 ? 60 : 14;
-            doc.text(header, xPos, yPos + 6);
-            xPos += width;
-        });
-        
-        // Tabellen-Inhalt
-        yPos += 8;
-        doc.setTextColor(0, 0, 0);
-        rows.forEach((row, rowIndex) => {
-            if (yPos > 270) {
-                doc.addPage();
-                yPos = 20;
+        Array.from(microTable.children).forEach(row => {
+            const cells = row.querySelectorAll('td');
+            let rowHtml = '<tr';
+            
+            if (row.classList.contains('water-row')) {
+                rowHtml += ' class="print-water-row"';
+            } else if (row.classList.contains('result-row')) {
+                rowHtml += ' class="print-result-row"';
             }
             
-            const cells = row.querySelectorAll('td');
-            const isWaterRow = row.classList.contains('water-row');
-            const isResultRow = row.classList.contains('result-row');
-            
-            if (isWaterRow) doc.setFillColor(200, 230, 255);
-            else if (isResultRow) doc.setFillColor(200, 255, 200);
-            else doc.setFillColor(255, 255, 255);
-            
-            doc.rect(10, yPos, 190, 8, 'F');
-            
-            xPos = 12;
-            cells.forEach((cell, cellIndex) => {
-                const width = cellIndex === 0 ? 60 : 14;
+            rowHtml += '>';
+            cells.forEach((cell, index) => {
                 const text = cell.textContent.trim();
-                doc.text(text, xPos, yPos + 6);
-                xPos += width;
+                if (index === 0) {
+                    rowHtml += `<td style="text-align: left; font-weight: 600;">${text}</td>`;
+                } else {
+                    rowHtml += `<td>${text}</td>`;
+                }
             });
-            
-            yPos += 8;
+            rowHtml += '</tr>';
+            html += rowHtml;
         });
+        
+        html += '</tbody>';
+        printMicroTable.innerHTML = html;
+    }
+    
+    // Verdünnungstool
+    const verdunnungLiter = document.getElementById('verdunnung-liter').value || '0';
+    const verdunnungSection = document.getElementById('print-verdunnung-section');
+    
+    if (parseFloat(verdunnungLiter) > 0) {
+        verdunnungSection.style.display = 'block';
+        let verdunnungHTML = `
+            <div class="print-verdunnung">
+                <div><strong>Verdünnung:</strong> +${verdunnungLiter} Liter Osmose-Wasser</div>
+                <div style="margin-top: 10px; font-size: 11px;">
+                    <strong>Nährstoff-Konzentration nach Verdünnung:</strong>
+        `;
+        
+        // Makronährstoffe Verdünnung
+        const macroOverview = document.getElementById('macro-overview');
+        if (macroOverview) {
+            verdunnungHTML += '<div style="margin-top: 5px;"><strong>Makronährstoffe (mg/L):</strong>';
+            Array.from(macroOverview.children).forEach(line => {
+                const text = line.textContent.trim();
+                verdunnungHTML += `<div style="margin-left: 10px;">${text}</div>`;
+            });
+            verdunnungHTML += '</div>';
+        }
+        
+        // Mikronährstoffe Verdünnung
+        const microOverview = document.getElementById('micro-overview');
+        if (microOverview) {
+            verdunnungHTML += '<div style="margin-top: 5px;"><strong>Mikronährstoffe (mg/L):</strong>';
+            Array.from(microOverview.children).forEach(line => {
+                const text = line.textContent.trim();
+                verdunnungHTML += `<div style="margin-left: 10px;">${text}</div>`;
+            });
+            verdunnungHTML += '</div>';
+        }
+        
+        verdunnungHTML += '</div></div>';
+        document.getElementById('print-verdunnung-content').innerHTML = verdunnungHTML;
+    } else {
+        verdunnungSection.style.display = 'none';
     }
     
     // Dosierungs-Zusammenfassung
     const dosierungList = document.getElementById('dosierung-list');
+    const printDosierungList = document.getElementById('print-dosierung-list');
     if (dosierungList && dosierungList.children.length > 0) {
-        yPos += 15;
-        if (yPos > 250) {
-            doc.addPage();
-            yPos = 20;
-        }
-        
-        doc.setFontSize(12);
-        doc.setTextColor(139, 92, 246);
-        doc.text('🧪 Dosierungs-Zusammenfassung', 15, yPos);
-        
-        yPos += 10;
-        doc.setFontSize(10);
-        doc.setTextColor(0, 0, 0);
-        
+        let html = '';
         Array.from(dosierungList.children).forEach(item => {
             const name = item.querySelector('.dosierung-name').textContent;
             const menge = item.querySelector('.dosierung-menge').textContent;
-            doc.text(`• ${name}: ${menge}`, 20, yPos);
-            yPos += 6;
+            html += `<div style="margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px;">• ${name}: <strong>${menge}</strong></div>`;
         });
+        printDosierungList.innerHTML = html;
     }
-    
-    // Footer
-    const pageCount = doc.internal.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Seite ${i} von ${pageCount}`, 105, 290, { align: 'center' });
-        doc.text('🌱 Erstellt mit Bobby\'s Düngerrechner', 105, 295, { align: 'center' });
-    }
-    
-    // PDF speichern
-    const filename = `Bobby_Duengerrechner_${date.replace(/[/:\\]/g, '-')}.pdf`;
-    doc.save(filename);
-    showNotification('✅ PDF erfolgreich erstellt!', 'success');
 }
 
 // Benachrichtigungs-System
