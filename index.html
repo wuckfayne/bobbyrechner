@@ -66,8 +66,6 @@ body.light .fert-row:hover{background:rgba(255,255,255,0.8);border-color:rgba(13
 .add-btn:hover{transform:translateY(-3px);background:linear-gradient(135deg,#7c3aed,#0891b2)}
 .reset-btn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:12px;transition:all 0.3s;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
 .reset-btn:hover{transform:translateY(-3px);background:linear-gradient(135deg,#eab308,#ca8a04)}
-.pdf-btn{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:700;transition:all 0.3s;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
-.pdf-btn:hover{transform:translateY(-3px);background:linear-gradient(135deg,#059669,#047857)}
 .result-row td{font-weight:800;border-top:2px solid rgba(34,197,94,0.3);font-size:1.05em}
 body.dark .result-row{background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(16,185,129,0.15))!important}
 body.light .result-row{background:linear-gradient(135deg,rgba(34,197,94,0.1),rgba(16,185,129,0.1))!important}
@@ -143,113 +141,10 @@ body.light .autocomplete-item{border-bottom:1px solid rgba(0,0,0,0.08)}
 .instagram-link{position:fixed;bottom:20px;right:20px;background:linear-gradient(135deg,#8b5cf6,#ec4899,#06b6d4);color:#fff;padding:12px 16px;border-radius:50px;text-decoration:none;font-weight:700;display:flex;align-items:center;gap:8px;z-index:1000;transition:all 0.3s;font-size:0.9em}
 .instagram-link:hover{transform:translateY(-3px);color:#fff}
 body.light .instagram-link{box-shadow:0 4px 20px rgba(139,92,246,0.3)}
-.dosierung-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:15px}
-.pdf-title-input{background:rgba(255,255,255,0.1);border:2px solid rgba(139,92,246,0.3);color:inherit;padding:12px 16px;border-radius:10px;font-size:1em;width:250px;text-align:center}
-body.dark .pdf-title-input{background:rgba(15,23,42,0.8)}
-body.light .pdf-title-input{background:rgba(255,255,255,0.9)}
-.pdf-title-input:focus{outline:none;border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .section{animation:fadeIn 0.5s ease-out}
 @media(max-width:1024px){.fert-row{grid-template-columns:1fr;gap:10px}.nutrient-grid{grid-template-columns:1fr}}
-@media(max-width:640px){h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}.instagram-link{bottom:15px;right:15px;padding:10px 14px;font-size:0.8em}.nutrient-overview{grid-template-columns:1fr}.settings-bar{flex-direction:column;align-items:stretch}.settings-item{justify-content:space-between}.dosierung-header{flex-direction:column;align-items:stretch}.pdf-title-input{width:100%}}
-
-/* DRUCK-STYLES */
-@media print {
-    @page {
-        margin: 1cm;
-        size: A4;
-    }
-    
-    body * {
-        visibility: hidden;
-    }
-    
-    #print-layout,
-    #print-layout * {
-        visibility: visible;
-    }
-    
-    #print-layout {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        background: white !important;
-        color: black !important;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .print-section {
-        background: white !important;
-        color: black !important;
-        border: 1px solid #333 !important;
-        margin-bottom: 15px;
-        padding: 15px;
-        border-radius: 5px;
-        page-break-inside: avoid;
-    }
-    
-    .print-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 10px 0;
-        font-size: 10px;
-    }
-    
-    .print-table th,
-    .print-table td {
-        border: 1px solid #333;
-        padding: 6px;
-        text-align: center;
-        background: white !important;
-        color: black !important;
-    }
-    
-    .print-table th {
-        background: #f0f0f0 !important;
-        font-weight: bold;
-    }
-    
-    .print-header {
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #333;
-    }
-    
-    .print-title {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2c5aa0 !important;
-        margin-bottom: 5px;
-    }
-    
-    .print-subtitle {
-        font-size: 14px;
-        color: #666 !important;
-    }
-    
-    .print-water-row {
-        background: #e8f4f8 !important;
-    }
-    
-    .print-result-row {
-        background: #f0f8f0 !important;
-        font-weight: bold;
-    }
-    
-    .print-verdunnung {
-        background: #fff8e1 !important;
-        border-left: 4px solid #ffa000;
-        padding: 10px;
-        margin: 10px 0;
-    }
-    
-    .no-print {
-        display: none !important;
-    }
-}
+@media(max-width:640px){h2{font-size:2em}.header-controls{position:relative;top:auto;right:auto;justify-content:flex-end;margin-bottom:20px}.instagram-link{bottom:15px;right:15px;padding:10px 14px;font-size:0.8em}.nutrient-overview{grid-template-columns:1fr}.settings-bar{flex-direction:column;align-items:stretch}.settings-item{justify-content:space-between}}
 </style>
 </head>
 <body class="dark">
@@ -265,7 +160,7 @@ body.light .pdf-title-input{background:rgba(255,255,255,0.9)}
 
 <div class='container'>
 <h2>🌱 Bobby's Düngerrechner 🌱</h2>
-<p class='version'>Version 2.0 (2025-11-12) - Mit Verdünnungstool & PDF Export</p>
+<p class='version'>Version 2.0 (2025-11-12) - Mit Verdünnungstool</p>
 
 <div class='section'>
 <h3>🧪 Dünger</h3>
@@ -314,15 +209,11 @@ body.light .pdf-title-input{background:rgba(255,255,255,0.9)}
 <div class='section' id='dosierung-section' style='display:none'>
 <h3>🧪 Dosierungs-Zusammenfassung</h3>
 <div class='dosierung-summary'>
-    <div class="dosierung-header">
+    <div class="settings-bar" style="margin-bottom:20px;">
         <div class="settings-item">
             <span class="settings-label">Volumen:</span>
             <input type="number" id="vol" value="10" step="0.1" min="0" oninput="calc()" class="settings-input">
             <span class="settings-label">Liter</span>
-        </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <input type="text" id="pdf-title" class="pdf-title-input" placeholder="PDF Titel (z.B. Blütephase)" value="Nährstoffanalyse">
-            <button class="pdf-btn" onclick="generatePDF()">📄 PDF Export</button>
         </div>
     </div>
     
@@ -352,12 +243,8 @@ body.light .pdf-title-input{background:rgba(255,255,255,0.9)}
 
 </div>
 
-<!-- VERSTECKTES DRUCK-LAYOUT -->
-<div id="print-layout" style="display: none;"></div>
-
 <a href="https://www.instagram.com/thebobbygrow/" target="_blank" class="instagram-link">📷 @thebobbygrow</a>
 
-<!-- Modal Fenster -->
 <div id="water-modal" class="modal">
 <div class="modal-content" style="max-width:500px">
     <div class="modal-header">
@@ -456,211 +343,6 @@ let searchTimeout;
 let ALL_FERTS = [];
 let filteredFerts = [];
 let currentNutrientTotals = {};
-
-// PDF EXPORT FUNKTION - KORRIGIERT
-function generatePDF() {
-    const pdfTitle = document.getElementById('pdf-title').value.trim() || 'Nährstoffanalyse';
-    
-    // Verstecktes Druck-Layout erstellen und füllen
-    createPrintLayout(pdfTitle);
-    
-    // Kurze Verzögerung damit das Layout geladen wird
-    setTimeout(() => {
-        window.print();
-        showNotification('📄 PDF-Dialog geöffnet - Wähle "Als PDF speichern"', 'info');
-    }, 100);
-}
-
-function createPrintLayout(pdfTitle) {
-    const date = new Date().toLocaleString('de-DE');
-    const vol = document.getElementById('vol').value || '10';
-    const ro = document.getElementById('ro').value || '0';
-    const tap = 100 - parseInt(ro);
-    
-    // Druck-Layout HTML direkt erstellen
-    const printLayout = document.getElementById('print-layout');
-    
-    // HEADER
-    printLayout.innerHTML = `
-        <div class="print-header">
-            <div class="print-title">${pdfTitle}</div>
-            <div class="print-subtitle">🌱 Bobby's Düngerrechner</div>
-            <div style="font-size: 12px; color: #666; margin-top: 5px;">Erstellt am: ${date}</div>
-        </div>
-    `;
-    
-    // EINSTELLUNGEN
-    printLayout.innerHTML += `
-        <div class="print-section">
-            <h4>⚙️ Berechnungseinstellungen</h4>
-            <div>
-                <div>Volumen: <strong>${vol} Liter</strong></div>
-                <div>Osmose-Wasser: <strong>${ro}%</strong></div>
-                <div>Leitungswasser: <strong>${tap}%</strong></div>
-            </div>
-        </div>
-    `;
-    
-    // MAKRO-TABELLE
-    const macroTable = document.getElementById('macro-body');
-    if (macroTable && macroTable.children.length > 0) {
-        let tableHTML = `
-            <div class="print-section">
-                <h4>📊 Makronährstoffe (mg/L)</h4>
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th>Dünger</th>
-                            <th>Dosierung</th>
-                            <th>N</th>
-                            <th>P</th>
-                            <th>K</th>
-                            <th>Ca</th>
-                            <th>Mg</th>
-                            <th>S</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        Array.from(macroTable.children).forEach(row => {
-            const cells = row.querySelectorAll('td');
-            let rowHTML = '<tr';
-            
-            if (row.classList.contains('water-row')) {
-                rowHTML += ' class="print-water-row"';
-            } else if (row.classList.contains('result-row')) {
-                rowHTML += ' class="print-result-row"';
-            }
-            
-            rowHTML += '>';
-            cells.forEach((cell, index) => {
-                const text = cell.textContent.trim();
-                if (index === 0) {
-                    rowHTML += `<td style="text-align: left; font-weight: 600;">${text}</td>`;
-                } else {
-                    rowHTML += `<td>${text}</td>`;
-                }
-            });
-            rowHTML += '</tr>';
-            tableHTML += rowHTML;
-        });
-        
-        tableHTML += '</tbody></table></div>';
-        printLayout.innerHTML += tableHTML;
-    }
-    
-    // MIKRO-TABELLE
-    const microTable = document.getElementById('micro-body');
-    if (microTable && microTable.children.length > 0) {
-        let tableHTML = `
-            <div class="print-section">
-                <h4>🔬 Mikronährstoffe (mg/L)</h4>
-                <table class="print-table">
-                    <thead>
-                        <tr>
-                            <th>Dünger</th>
-                            <th>Dosierung</th>
-                            <th>B</th>
-                            <th>Cu</th>
-                            <th>Fe</th>
-                            <th>Mn</th>
-                            <th>Mo</th>
-                            <th>Zn</th>
-                            <th>Si</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
-        
-        Array.from(microTable.children).forEach(row => {
-            const cells = row.querySelectorAll('td');
-            let rowHTML = '<tr';
-            
-            if (row.classList.contains('water-row')) {
-                rowHTML += ' class="print-water-row"';
-            } else if (row.classList.contains('result-row')) {
-                rowHTML += ' class="print-result-row"';
-            }
-            
-            rowHTML += '>';
-            cells.forEach((cell, index) => {
-                const text = cell.textContent.trim();
-                if (index === 0) {
-                    rowHTML += `<td style="text-align: left; font-weight: 600;">${text}</td>`;
-                } else {
-                    rowHTML += `<td>${text}</td>`;
-                }
-            });
-            rowHTML += '</tr>';
-            tableHTML += rowHTML;
-        });
-        
-        tableHTML += '</tbody></table></div>';
-        printLayout.innerHTML += tableHTML;
-    }
-    
-    // VERDÜNNUNGSTOOL
-    const verdunnungLiter = document.getElementById('verdunnung-liter').value || '0';
-    if (parseFloat(verdunnungLiter) > 0) {
-        let verdunnungHTML = `
-            <div class="print-section">
-                <h4>🧪 Verdünnungstool</h4>
-                <div class="print-verdunnung">
-                    <div><strong>Verdünnung:</strong> +${verdunnungLiter} Liter Osmose-Wasser</div>
-        `;
-        
-        // Makronährstoffe Verdünnung
-        const macroOverview = document.getElementById('macro-overview');
-        if (macroOverview && macroOverview.children.length > 0) {
-            verdunnungHTML += '<div style="margin-top: 10px;"><strong>Makronährstoffe (mg/L):</strong>';
-            Array.from(macroOverview.children).forEach(line => {
-                const text = line.textContent.trim();
-                verdunnungHTML += `<div style="margin-left: 10px; font-size: 11px;">${text}</div>`;
-            });
-            verdunnungHTML += '</div>';
-        }
-        
-        // Mikronährstoffe Verdünnung
-        const microOverview = document.getElementById('micro-overview');
-        if (microOverview && microOverview.children.length > 0) {
-            verdunnungHTML += '<div style="margin-top: 10px;"><strong>Mikronährstoffe (mg/L):</strong>';
-            Array.from(microOverview.children).forEach(line => {
-                const text = line.textContent.trim();
-                verdunnungHTML += `<div style="margin-left: 10px; font-size: 11px;">${text}</div>`;
-            });
-            verdunnungHTML += '</div>';
-        }
-        
-        verdunnungHTML += '</div></div>';
-        printLayout.innerHTML += verdunnungHTML;
-    }
-    
-    // DOSIERUNGS-ZUSAMMENFASSUNG
-    const dosierungList = document.getElementById('dosierung-list');
-    if (dosierungList && dosierungList.children.length > 0) {
-        let dosierungHTML = `
-            <div class="print-section">
-                <h4>🧪 Dosierungs-Zusammenfassung</h4>
-        `;
-        
-        Array.from(dosierungList.children).forEach(item => {
-            const name = item.querySelector('.dosierung-name').textContent;
-            const menge = item.querySelector('.dosierung-menge').textContent;
-            dosierungHTML += `<div style="margin: 5px 0; padding: 5px; background: #f5f5f5; border-radius: 3px;">• ${name}: <strong>${menge}</strong></div>`;
-        });
-        
-        dosierungHTML += '</div>';
-        printLayout.innerHTML += dosierungHTML;
-    }
-    
-    // FOOTER
-    printLayout.innerHTML += `
-        <div style="text-align: center; margin-top: 30px; font-size: 10px; color: #999; border-top: 1px solid #ccc; padding-top: 10px;">
-            Erstellt mit Bobby's Düngerrechner | 🌱 @thebobbygrow
-        </div>
-    `;
-}
 
 // Benachrichtigungs-System
 function showNotification(message, type = 'info') {
@@ -1376,15 +1058,29 @@ function loadInputs() {
     if(ro !== null) document.getElementById('ro').value = ro;
 }
 
-// Initialisierung - SICHERE VERSION ohne Datenverlust
+// Initialisierung
 window.onload = async function() {
     const currentVersion = '2.0';
     const savedVersion = localStorage.getItem('appVersion');
     
-    // Nur Version updaten falls nötig, keine Daten löschen!
     if (savedVersion !== currentVersion) {
+        const keepWaterValues = localStorage.getItem('waterValues');
+        const keepUserFerts = localStorage.getItem('userFerts');
+        const keepTheme = localStorage.getItem('theme');
+        const keepVol = localStorage.getItem('vol');
+        const keepRo = localStorage.getItem('ro');
+        const keepFertRows = localStorage.getItem('savedFertRows');
+        
+        localStorage.clear();
+        
+        if (keepWaterValues) localStorage.setItem('waterValues', keepWaterValues);
+        if (keepUserFerts) localStorage.setItem('userFerts', keepUserFerts);
+        if (keepTheme) localStorage.setItem('theme', keepTheme);
+        if (keepVol) localStorage.setItem('vol', keepVol);
+        if (keepRo) localStorage.setItem('ro', keepRo);
+        if (keepFertRows) localStorage.setItem('savedFertRows', keepFertRows);
+        
         localStorage.setItem('appVersion', currentVersion);
-        console.log('App Version updated to', currentVersion);
     }
     
     ALL_FERTS = await loadAllFertsFromCSV();
