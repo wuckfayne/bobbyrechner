@@ -5,7 +5,6 @@
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Bobby's Düngerrechner</title>
 <style>
-/* CSS bleibt unverändert - bereits sehr gut strukturiert */
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#e4e7eb;min-height:100vh;padding:20px;position:relative;overflow-x:hidden;transition:all 0.5s ease}
 body.dark{background:linear-gradient(135deg,#0a0e27 0%,#1a1f3a 50%,#0f1419 100%)}
@@ -60,7 +59,7 @@ body.light .fert-row{background:rgba(255,255,255,0.6);border:1px solid rgba(139,
 .fert-row:hover{transform:translateX(4px)}
 body.dark .fert-row:hover{background:rgba(30,41,59,0.7);border-color:rgba(139,92,246,0.3)}
 body.light .fert-row:hover{background:rgba(255,255,255,0.8);border-color:rgba(139,92,246,0.4)}
-.fert-row .unit{color:#06b6d6;font-weight:700;text-align:center;font-size:0.9em}
+.fert-row .unit{color:#06b6d4;font-weight:700;text-align:center;font-size:0.9em}
 .delete-btn{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;padding:10px;border-radius:10px;cursor:pointer;font-size:1.2em;font-weight:bold;transition:all 0.3s;display:flex;align-items:center;justify-content:center;width:40px;height:40px}
 .delete-btn:hover{background:linear-gradient(135deg,#dc2626,#b91c1c);transform:scale(1.1)}
 .add-btn{background:linear-gradient(135deg,#8b5cf6,#06b6d4);color:#fff;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:700;margin-top:12px;transition:all 0.3s;display:inline-flex;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
@@ -334,18 +333,9 @@ const OXID_FACTORS = {
     p: 0.4364, k: 0.8301, ca: 0.7147, mg: 0.6030
 };
 
-// Konstanten für bessere Wartbarkeit
-const NUTRIENT_TYPES = {
-    macro: ['n', 'p', 'k', 'ca', 'mg', 's'],
-    micro: ['b', 'cu', 'fe', 'mn', 'mo', 'zn', 'si']
-};
+// Nährstoff-Konstanten
+const MICRO_NUTRIENTS = ['b', 'cu', 'fe', 'mn', 'mo', 'zn', 'si'];
 
-const NUTRIENT_NAMES = {
-    n: 'N', p: 'P', k: 'K', ca: 'Ca', mg: 'Mg', s: 'S',
-    b: 'B', cu: 'Cu', fe: 'Fe', mn: 'Mn', mo: 'Mo', zn: 'Zn', si: 'Si'
-};
-
-// Globale Variablen
 let fertCounter = 0;
 let userFerts = [];
 let waterValues = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
@@ -354,11 +344,11 @@ let ALL_FERTS = [];
 let filteredFerts = [];
 let currentNutrientTotals = {};
 
-// Hilfsfunktionen
+// Benachrichtigungs-System
 function showNotification(message, type = 'info') {
     const colors = {
         info: '#06b6d4',
-        success: '#10b981',
+        success: '#10b981', 
         warning: '#f59e0b',
         error: '#ef4444'
     };
@@ -383,12 +373,7 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-function validateNumber(value, min = 0, max = Infinity) {
-    const num = parseFloat(value);
-    return !isNaN(num) && num >= min && num <= max;
-}
-
-// Datenverwaltung
+// Daten laden
 async function loadAllFertsFromCSV() {
     try {
         const response = await fetch('./data/fertilizers.csv');
@@ -420,6 +405,7 @@ function getAllFerts() {
     return [...ALL_FERTS, ...userFerts];
 }
 
+// Dünger-Zeilen Management
 function saveFertRows() {
     const fertRows = document.querySelectorAll('.fert-row');
     const savedRows = [];
@@ -478,6 +464,7 @@ function updateFertStorage() {
     calc();
 }
 
+// Validierung
 function validateInputs() {
     const vol = parseFloat(document.getElementById('vol').value) || 0;
     const ro = parseFloat(document.getElementById('ro').value) || 0;
@@ -540,7 +527,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Wasserwerte-Funktionen
+// Wasserwerte
 function saveWaterValues() {
     waterValues = {
         n: parseFloat(document.getElementById('water_n').value) || 0,
@@ -583,7 +570,7 @@ function loadWaterValues() {
     }
 }
 
-// Dünger-Management
+// Dünger Management
 function saveNewFert() {
     const name = document.getElementById('new-fert-name').value.trim();
     const unit = document.getElementById('new-fert-unit').value;
@@ -593,7 +580,6 @@ function saveNewFert() {
         return;
     }
     
-    // Prüfen, ob Name bereits existiert
     const allFerts = getAllFerts();
     if (allFerts.some(fert => fert.name.toLowerCase() === name.toLowerCase())) {
         showNotification('❌ Ein Dünger mit diesem Namen existiert bereits!', 'error');
@@ -620,7 +606,6 @@ function saveNewFert() {
     userFerts.push(newFert);
     localStorage.setItem('userFerts', JSON.stringify(userFerts));
     
-    // Formular zurücksetzen
     document.getElementById('new-fert-name').value = '';
     document.querySelectorAll('#add-fert-modal input[type="number"]').forEach(input => {
         input.value = '0';
@@ -784,7 +769,7 @@ function clearSearch() {
     filteredFerts = [];
 }
 
-// Dünger-Zeilen-Management
+// Dünger-Zeilen
 function addFertRow() {
     const container = document.getElementById('fert-container');
     const row = document.createElement('div');
@@ -831,7 +816,7 @@ function removeFertRow(id) {
     }
 }
 
-// Berechnungsfunktionen
+// Berechnungen - OPTIMIERTE VERSION
 function updateVerdunnung() {
     const verdunnungLiter = parseFloat(document.getElementById('verdunnung-liter').value) || 0;
     if (verdunnungLiter < 0) {
@@ -843,12 +828,15 @@ function updateVerdunnung() {
     const totalVolume = vol + verdunnungLiter;
     
     let macroHTML = '';
-    NUTRIENT_TYPES.macro.forEach(nutrient => {
+    const macroNutrients = ['n', 'p', 'k', 'ca', 'mg', 's'];
+    const macroNames = {'n': 'N', 'p': 'P', 'k': 'K', 'ca': 'Ca', 'mg': 'Mg', 's': 'S'};
+    
+    macroNutrients.forEach(nutrient => {
         const currentValue = currentNutrientTotals[nutrient] || 0;
         const dilutedValue = verdunnungLiter > 0 ? (currentValue * vol) / totalVolume : currentValue;
         macroHTML += `
             <div class="nutrient-line">
-                <span class="nutrient-name">${NUTRIENT_NAMES[nutrient]}</span>
+                <span class="nutrient-name">${macroNames[nutrient]}</span>
                 <span>
                     <span class="nutrient-value-verdunnung current-value">${currentValue.toFixed(1)}</span>
                     ${verdunnungLiter > 0 ? ` → <span class="nutrient-value-verdunnung diluted-value">${dilutedValue.toFixed(1)}</span>` : ''}
@@ -859,12 +847,14 @@ function updateVerdunnung() {
     document.getElementById('macro-overview').innerHTML = macroHTML;
     
     let microHTML = '';
-    NUTRIENT_TYPES.micro.forEach(nutrient => {
+    const microNames = {'b': 'B', 'cu': 'Cu', 'fe': 'Fe', 'mn': 'Mn', 'mo': 'Mo', 'zn': 'Zn', 'si': 'Si'};
+    
+    MICRO_NUTRIENTS.forEach(nutrient => {
         const currentValue = currentNutrientTotals[nutrient] || 0;
         const dilutedValue = verdunnungLiter > 0 ? (currentValue * vol) / totalVolume : currentValue;
         microHTML += `
             <div class="nutrient-line">
-                <span class="nutrient-name">${NUTRIENT_NAMES[nutrient]}</span>
+                <span class="nutrient-name">${microNames[nutrient]}</span>
                 <span>
                     <span class="nutrient-value-verdunnung current-value">${currentValue.toFixed(nutrient === 'si' ? 1 : 2)}</span>
                     ${verdunnungLiter > 0 ? ` → <span class="nutrient-value-verdunnung diluted-value">${dilutedValue.toFixed(nutrient === 'si' ? 1 : 2)}</span>` : ''}
@@ -881,7 +871,6 @@ function calc() {
     const vol = parseFloat(document.getElementById('vol').value) || 0;
     const ro = parseFloat(document.getElementById('ro').value) || 0;
     
-    // Negative Werte verhindern
     document.querySelectorAll('.fert-row input[type="number"]').forEach(input => {
         if (input.value < 0) input.value = 0;
     });
@@ -916,7 +905,7 @@ function calc() {
         }
     });
     
-    // Nährstoffe berechnen
+    // Nährstoffe berechnen - OPTIMIERT
     const sum = {n:0,p:0,k:0,ca:0,mg:0,s:0,b:0,cu:0,fe:0,mn:0,mo:0,zn:0,si:0};
     used.forEach(u => {
         Object.keys(sum).forEach(key => {
@@ -924,11 +913,10 @@ function calc() {
         });
     });
     
-    // Einstellungen speichern
     localStorage.setItem('vol', document.getElementById('vol').value);
     localStorage.setItem('ro', document.getElementById('ro').value);
     
-    // Wasserwerte berechnen
+    // Wasserwerte berechnen - OPTIMIERT
     const w = {};
     Object.keys(waterValues).forEach(key => {
         w[key] = waterValues[key] * tap / 100;
@@ -940,9 +928,11 @@ function calc() {
         currentNutrientTotals[key] = w[key] + sum[key];
     });
     
-    // Makronährstoffe-Tabelle aktualisieren
+    // Makronährstoffe-Tabelle
     let macroHTML = '';
-    if(tap>0 && Object.values(w).some(val => val > 0)){
+    const hasWaterMacro = tap > 0 && Object.values(w).some(val => val > 0);
+    
+    if(hasWaterMacro){
         macroHTML += `<tr class="water-row"><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
             <td><span class="nutrient-value">${w.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -952,7 +942,7 @@ function calc() {
             <td><span class="nutrient-value">${w.s.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     }
     
-    used.forEach(u=>{
+    used.forEach(u => {
         macroHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}/L</td>
             <td><span class="nutrient-value">${u.n.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${u.p.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -972,9 +962,11 @@ function calc() {
     
     document.getElementById('macro-body').innerHTML = macroHTML;
     
-    // Mikronährstoffe-Tabelle aktualisieren
+    // Mikronährstoffe-Tabelle - JETZT MIT FILTER! ✅
     let microHTML = '';
-    if(tap>0 && Object.values(w).some(val => val > 0)){
+    const hasWaterMicro = tap > 0 && MICRO_NUTRIENTS.some(nutrient => w[nutrient] > 0);
+    
+    if(hasWaterMicro){
         microHTML += `<tr class="water-row"><td>Leitungswasser (${tap.toFixed(0)}%)</td><td>-</td>
             <td><span class="nutrient-value">${w.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${w.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -985,8 +977,10 @@ function calc() {
             <td><span class="nutrient-value">${w.si.toFixed(1)}</span><span class="nutrient-unit">mg/L</span></td></tr>`;
     }
     
-    used.forEach(u=>{
-        if(Object.values(u).some(val => val > 0)){
+    // NUR Dünger mit Mikronährstoffen anzeigen! ✅
+    used.forEach(u => {
+        const hasMicro = MICRO_NUTRIENTS.some(nutrient => u[nutrient] > 0);
+        if (hasMicro) {
             microHTML += `<tr><td>${u.name}</td><td>${u.dose.toFixed(2)} ${u.unit}/L</td>
                 <td><span class="nutrient-value">${u.b.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
                 <td><span class="nutrient-value">${u.cu.toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -998,7 +992,9 @@ function calc() {
         }
     });
     
-    if(microHTML || sum.si > 0){
+    const hasAnyMicro = hasWaterMicro || used.some(u => MICRO_NUTRIENTS.some(nutrient => u[nutrient] > 0));
+    
+    if(hasAnyMicro){
         microHTML += `<tr class='result-row'><td><b>GESAMT</b></td><td>-</td>
             <td><span class="nutrient-value">${(w.b+sum.b).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
             <td><span class="nutrient-value">${(w.cu+sum.cu).toFixed(2)}</span><span class="nutrient-unit">mg/L</span></td>
@@ -1013,7 +1009,7 @@ function calc() {
     
     document.getElementById('micro-body').innerHTML = microHTML;
     
-    // Dosierungs-Zusammenfassung aktualisieren
+    // Dosierungs-Zusammenfassung
     if(dosierungList.length > 0) {
         document.getElementById('dosierung-section').style.display = 'block';
         document.getElementById('verdunnung-tool').style.display = 'block';
@@ -1036,7 +1032,7 @@ function calc() {
     }
 }
 
-// Theme-Funktionen
+// Theme
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById('theme-btn');
@@ -1067,7 +1063,6 @@ window.onload = async function() {
     const currentVersion = '2.0';
     const savedVersion = localStorage.getItem('appVersion');
     
-    // Version-Check und Datenmigration
     if (savedVersion !== currentVersion) {
         const keepWaterValues = localStorage.getItem('waterValues');
         const keepUserFerts = localStorage.getItem('userFerts');
@@ -1088,10 +1083,8 @@ window.onload = async function() {
         localStorage.setItem('appVersion', currentVersion);
     }
     
-    // Daten laden
     ALL_FERTS = await loadAllFertsFromCSV();
     
-    // Theme laden
     const savedTheme = localStorage.getItem('theme');
     if(savedTheme === 'light') {
         document.body.classList.remove('dark');
@@ -1099,14 +1092,12 @@ window.onload = async function() {
         document.getElementById('theme-btn').textContent = '☀️';
     }
     
-    // UI initialisieren
     loadInputs();
     loadUserFerts();
     loadWaterValues();
     loadFertRows();
     calc();
     
-    // Event-Listener für Eingabevalidierung
     document.querySelectorAll('input[type="number"]').forEach(input => {
         input.addEventListener('change', function() {
             if (this.value < 0) this.value = 0;
